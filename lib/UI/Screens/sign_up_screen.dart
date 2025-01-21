@@ -7,7 +7,7 @@ import '../Utills/app_colors.dart';
 class SignUpScreen extends StatefulWidget {
   const SignUpScreen({super.key});
 
-  static const String name = 'sign-up';
+  static const String name = '/sign-up';
 
   @override
   State<SignUpScreen> createState() => _SignUpScreenState();
