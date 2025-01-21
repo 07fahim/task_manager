@@ -1,5 +1,7 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:pin_code_fields/pin_code_fields.dart';
+import 'package:task_manager/UI/Screens/reset_password_screen.dart';
 import 'package:task_manager/UI/Screens/sign_in_screen.dart';
 import 'package:task_manager/UI/Widgets/screen_background.dart';
 
@@ -11,11 +13,13 @@ class ForgotPasswordVerifyOtpScreen extends StatefulWidget {
   static const String name = '/forgot-password/verify-otp';
 
   @override
-  State<ForgotPasswordVerifyOtpScreen> createState() => _ForgotPasswordVerifyOtpScreenState();
+  State<ForgotPasswordVerifyOtpScreen> createState() =>
+      _ForgotPasswordVerifyOtpScreenState();
 }
 
-class _ForgotPasswordVerifyOtpScreenState extends State<ForgotPasswordVerifyOtpScreen> {
-  final TextEditingController _emailTextController = TextEditingController();
+class _ForgotPasswordVerifyOtpScreenState
+    extends State<ForgotPasswordVerifyOtpScreen> {
+  final TextEditingController _otpTextController = TextEditingController();
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
   @override
@@ -36,24 +40,21 @@ class _ForgotPasswordVerifyOtpScreenState extends State<ForgotPasswordVerifyOtpS
                   'Pin Verification',
                   style: textTheme.titleLarge,
                 ),
-                const SizedBox(height:4),
+                const SizedBox(height: 4),
                 const Text(
                   'A 6 digit verification pin has been sent to your email address',
-                  style:TextStyle(
-                    color: Colors.grey,
-                    fontWeight: FontWeight.w400,
-                    fontSize: 16
-                  ),
+                  style: TextStyle(
+                      color: Colors.grey,
+                      fontWeight: FontWeight.w400,
+                      fontSize: 16),
                 ),
                 const SizedBox(height: 24),
-                TextFormField(
-                  controller: _emailTextController,
-                  keyboardType: TextInputType.emailAddress,
-                  decoration: const InputDecoration(hintText: "Email"),
-                ),
+                _buildPinCodeTextField(),
                 const SizedBox(height: 24),
                 ElevatedButton(
-                    onPressed: () {},
+                    onPressed: () {
+                      Navigator.pushNamed(context, ResetPasswordScreen.name);
+                    },
                     child: const Icon(Icons.arrow_circle_right_outlined)),
                 const SizedBox(height: 48),
                 Center(
@@ -64,6 +65,29 @@ class _ForgotPasswordVerifyOtpScreenState extends State<ForgotPasswordVerifyOtpS
           ),
         ),
       )),
+    );
+  }
+
+  Widget _buildPinCodeTextField() {
+    return PinCodeTextField(
+      keyboardType: TextInputType.number,
+      length: 6,
+      obscureText: false,
+      animationType: AnimationType.fade,
+      pinTheme: PinTheme(
+        shape: PinCodeFieldShape.box,
+        borderRadius: BorderRadius.circular(5),
+        fieldHeight: 50,
+        fieldWidth: 50,
+        activeFillColor: Colors.white,
+        selectedFillColor: Colors.white,
+        inactiveFillColor: Colors.white,
+      ),
+      animationDuration: const Duration(milliseconds: 300),
+      backgroundColor: Colors.transparent,
+      enableActiveFill: true,
+      controller: _otpTextController,
+      appContext: context,
     );
   }
 
@@ -83,8 +107,7 @@ class _ForgotPasswordVerifyOtpScreenState extends State<ForgotPasswordVerifyOtpS
                   Navigator.pushAndRemoveUntil(
                       context,
                       MaterialPageRoute(builder: (_) => const SignInScreen()),
-                          (route) => false
-                  );
+                      (route) => false);
                 },
             )
           ]),
@@ -93,7 +116,7 @@ class _ForgotPasswordVerifyOtpScreenState extends State<ForgotPasswordVerifyOtpS
 
   @override
   void dispose() {
-    _emailTextController.dispose();
+    _otpTextController.dispose();
     super.dispose();
   }
 }
