@@ -20,12 +20,25 @@ class _SignInScreenState extends State<SignInScreen> {
         child: Padding(
           padding: const EdgeInsets.all(16.0),
           child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              SizedBox(height: 80),
+              const SizedBox(height: 80),
               Text(
                 'Get Started with',
                 style: textTheme.titleLarge,
-              )
+              ),
+              const SizedBox(height: 24),
+              TextFormField(
+                decoration: const InputDecoration(
+                  hintText: "Email"
+                ),
+              ),
+              const SizedBox(height: 8),
+              TextFormField(
+                decoration: const InputDecoration(
+                    hintText: "Password"
+                ),
+              ),
             ],
           ),
         ),
