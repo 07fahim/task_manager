@@ -14,7 +14,11 @@ class _SignInScreenState extends State<SignInScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: ScreenBackground(child: Column()),
+      body: ScreenBackground(child: Column(
+        children: [
+          Text('Get Started with')
+        ],
+      )),
     );
   }
 }
