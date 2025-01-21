@@ -1,6 +1,5 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import 'package:task_manager/UI/Screens/sign_up_screen.dart';
 import 'package:task_manager/UI/Widgets/screen_background.dart';
 
 import '../Utills/app_colors.dart';
@@ -37,7 +36,7 @@ class _ForgotPasswordVerifyEmailScreenState extends State<ForgotPasswordVerifyEm
                   style: textTheme.titleLarge,
                 ),
                 const SizedBox(height:4),
-                Text(
+                const Text(
                   'A 6 digit verification pin will sent to your email address',
                   style:TextStyle(
                     color: Colors.grey,
