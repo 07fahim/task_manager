@@ -1,5 +1,6 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:task_manager/UI/Screens/sign_up_screen.dart';
 import 'package:task_manager/UI/Widgets/screen_background.dart';
 
 import '../Utills/app_colors.dart';
@@ -33,7 +34,7 @@ class _SignInScreenState extends State<SignInScreen> {
               children: [
                 const SizedBox(height: 80),
                 Text(
-                  'Get Started with',
+                  'Get Started With',
                   style: textTheme.titleLarge,
                 ),
                 const SizedBox(height: 24),
@@ -85,8 +86,12 @@ class _SignInScreenState extends State<SignInScreen> {
           children: [
             TextSpan(
               text: "Sign up",
-              style: const TextStyle(color: AppColor.themeColor),
-              recognizer: TapGestureRecognizer()..onTap = () {},
+              style: const TextStyle(
+                  color: AppColor.themeColor, fontWeight: FontWeight.bold),
+              recognizer: TapGestureRecognizer()
+                ..onTap = () {
+                  Navigator.pushNamed(context, SignUpScreen.name);
+                },
             )
           ]),
     );
