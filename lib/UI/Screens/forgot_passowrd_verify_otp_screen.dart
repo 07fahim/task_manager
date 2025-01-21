@@ -41,12 +41,9 @@ class _ForgotPasswordVerifyOtpScreenState
                   style: textTheme.titleLarge,
                 ),
                 const SizedBox(height: 4),
-                const Text(
+                 Text(
                   'A 6 digit verification pin has been sent to your email address',
-                  style: TextStyle(
-                      color: Colors.grey,
-                      fontWeight: FontWeight.w400,
-                      fontSize: 16),
+                  style: textTheme.titleSmall,
                 ),
                 const SizedBox(height: 24),
                 _buildPinCodeTextField(),

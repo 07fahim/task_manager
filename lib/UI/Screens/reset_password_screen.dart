@@ -38,12 +38,9 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                   style: textTheme.titleLarge,
                 ),
                 const SizedBox(height: 4),
-                const Text(
+                 Text(
                   'Minimun length password 8 character with letter and number combination',
-                  style: TextStyle(
-                      color: Colors.grey,
-                      fontWeight: FontWeight.w400,
-                      fontSize: 16),
+                  style: textTheme.titleSmall
                 ),
                 const SizedBox(height: 24),
                 TextFormField(

@@ -37,13 +37,9 @@ class _ForgotPasswordVerifyEmailScreenState extends State<ForgotPasswordVerifyEm
                   style: textTheme.titleLarge,
                 ),
                 const SizedBox(height:4),
-                const Text(
+                Text(
                   'A 6 digit verification pin will sent to your email address',
-                  style:TextStyle(
-                    color: Colors.grey,
-                    fontWeight: FontWeight.w400,
-                    fontSize: 16
-                  ),
+                  style: textTheme.titleSmall,
                 ),
                 const SizedBox(height: 24),
                 TextFormField(
