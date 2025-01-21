@@ -1,5 +1,6 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:task_manager/UI/Screens/forgot_passowrd_verify_email.dart';
 import 'package:task_manager/UI/Screens/sign_up_screen.dart';
 import 'package:task_manager/UI/Widgets/screen_background.dart';
 
@@ -60,7 +61,9 @@ class _SignInScreenState extends State<SignInScreen> {
                   child: Column(
                     children: [
                       TextButton(
-                          onPressed: () {},
+                          onPressed: () {
+                            Navigator.pushNamed(context, ForgotPasswordVerifyEmailScreen.name);
+                          },
                           child: const Text(
                             "Forgot Password?",
                             style: TextStyle(color: Colors.black54),
