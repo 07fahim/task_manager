@@ -1,5 +1,8 @@
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:task_manager/UI/Widgets/screen_background.dart';
+
+import '../Utills/app_colors.dart';
 
 class SignInScreen extends StatefulWidget {
   const SignInScreen({super.key});
@@ -42,11 +45,40 @@ class _SignInScreenState extends State<SignInScreen> {
               const SizedBox(height: 24),
               ElevatedButton(
                   onPressed: () {},
-                  child: const Icon(Icons.arrow_circle_right_outlined))
+                  child: const Icon(Icons.arrow_circle_right_outlined)),
+              const SizedBox(height: 48),
+              Center(
+                child: Column(
+                  children: [
+                    TextButton(
+                        onPressed: () {},
+                        child: const Text(
+                          "Forgot Password?",
+                          style: TextStyle(color: Colors.black54),
+                        )),
+                    _buildSignUpSection(),
+                  ],
+                ),
+              ),
             ],
           ),
         ),
       )),
     );
+  }
+
+  Widget _buildSignUpSection() {
+    return RichText(
+                    text: TextSpan(
+                        text: "Don't have an account? ",
+                        style: const TextStyle(
+                            color: Colors.black38, fontWeight: FontWeight.w400),
+                        children: [
+                          TextSpan(
+                              text: "Sign up",
+                              style: const TextStyle(color: AppColor.themeColor),
+                          recognizer: TapGestureRecognizer()..onTap = (){},)
+                        ]),
+                  );
   }
 }
