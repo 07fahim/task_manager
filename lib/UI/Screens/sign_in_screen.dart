@@ -29,16 +29,20 @@ class _SignInScreenState extends State<SignInScreen> {
               ),
               const SizedBox(height: 24),
               TextFormField(
-                decoration: const InputDecoration(
-                  hintText: "Email"
-                ),
+                keyboardType: TextInputType.emailAddress,
+                decoration: const InputDecoration(hintText: "Email"),
               ),
               const SizedBox(height: 8),
               TextFormField(
+                obscureText: true,
                 decoration: const InputDecoration(
-                    hintText: "Password"
+                  hintText: "Password",
                 ),
               ),
+              const SizedBox(height: 24),
+              ElevatedButton(
+                  onPressed: () {},
+                  child: const Icon(Icons.arrow_circle_right_outlined))
             ],
           ),
         ),
