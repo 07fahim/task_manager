@@ -1,6 +1,6 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import 'package:task_manager/UI/Screens/forgot_passowrd_verify_email_screen.dart';
+import 'package:task_manager/UI/Screens/sign_in_screen.dart';
 import 'package:task_manager/UI/Screens/sign_up_screen.dart';
 import 'package:task_manager/UI/Widgets/screen_background.dart';
 
@@ -16,8 +16,8 @@ class ResetPasswordScreen extends StatefulWidget {
 }
 
 class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
-  final TextEditingController _emailTextController = TextEditingController();
-  final TextEditingController _passTextController = TextEditingController();
+  final TextEditingController _newPassTextController = TextEditingController();
+  final TextEditingController _confirmPassTextController = TextEditingController();
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
   @override
@@ -48,13 +48,13 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                 ),
                 const SizedBox(height: 24),
                 TextFormField(
-                  controller: _emailTextController,
+                  controller: _newPassTextController,
                   keyboardType: TextInputType.emailAddress,
                   decoration: const InputDecoration(hintText: "New Password"),
                 ),
                 const SizedBox(height: 8),
                 TextFormField(
-                  controller: _passTextController,
+                  controller: _confirmPassTextController,
                   obscureText: true,
                   decoration: const InputDecoration(
                     hintText: "Confirm Password",
@@ -66,7 +66,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                     child: const Icon(Icons.arrow_circle_right_outlined)),
                 const SizedBox(height: 48),
                 Center(
-                  child: _buildSignUpSection(),
+                  child: _buildSignInSection(),
                 ),
               ],
             ),
@@ -76,7 +76,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
     );
   }
 
-  Widget _buildSignUpSection() {
+  Widget _buildSignInSection() {
     return RichText(
       text: TextSpan(
           text: "Have an account? ",
@@ -89,7 +89,10 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                   color: AppColor.themeColor, fontWeight: FontWeight.bold),
               recognizer: TapGestureRecognizer()
                 ..onTap = () {
-                  Navigator.pushNamed(context, SignUpScreen.name);
+                  Navigator.pushAndRemoveUntil(
+                      context,
+                      MaterialPageRoute(builder: (_) => const SignInScreen()),
+                          (route) => false);
                 },
             )
           ]),
@@ -98,8 +101,8 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
 
   @override
   void dispose() {
-    _emailTextController.dispose();
-    _passTextController.dispose();
+    _newPassTextController.dispose();
+    _confirmPassTextController.dispose();
     super.dispose();
   }
 }
