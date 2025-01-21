@@ -1,7 +1,6 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:task_manager/UI/Screens/sign_in_screen.dart';
-import 'package:task_manager/UI/Screens/sign_up_screen.dart';
 import 'package:task_manager/UI/Widgets/screen_background.dart';
 
 import '../Utills/app_colors.dart';
@@ -63,7 +62,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                 const SizedBox(height: 24),
                 ElevatedButton(
                     onPressed: () {},
-                    child: const Icon(Icons.arrow_circle_right_outlined)),
+                    child: const Text('Confirm')),
                 const SizedBox(height: 48),
                 Center(
                   child: _buildSignInSection(),
