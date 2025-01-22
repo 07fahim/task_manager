@@ -22,7 +22,10 @@ class _NewTaskListScreenState extends State<NewTaskListScreen> {
           child: Column(
             children: [
               _buildTasksSummaryByStatus(),
-              _buildTasksListView()
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                child: _buildTasksListView(),
+              )
             ],
           ),
         ),
