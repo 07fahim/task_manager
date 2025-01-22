@@ -1,4 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:task_manager/UI/Widgets/screen_background.dart';
+
+import '../Widgets/task_items_widget.dart';
+import '../Widgets/task_status_summary_counter_widget.dart';
+import '../Widgets/tm_app_bar.dart';
 
 class NewTaskListScreen extends StatefulWidget {
   const NewTaskListScreen({super.key});
@@ -10,8 +15,46 @@ class NewTaskListScreen extends StatefulWidget {
 class _NewTaskListScreenState extends State<NewTaskListScreen> {
   @override
   Widget build(BuildContext context) {
-    return const Center(
-      child: Text("New Task"),
+    return Scaffold(
+      appBar: const TMAppBar(),
+      body: ScreenBackground(
+        child: SingleChildScrollView(
+          child: Column(
+            children: [
+              _buildTasksSummaryByStatus(),
+              _buildTasksListView()
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  ListView _buildTasksListView() {
+    return ListView.builder(
+                primary: false,
+                shrinkWrap: true,
+                itemCount: 10,
+                itemBuilder: (context, index) {
+                  return const TaskItemsWidget();
+                });
+  }
+
+  Widget _buildTasksSummaryByStatus() {
+    return const SingleChildScrollView(
+      scrollDirection: Axis.horizontal,
+      child: Padding(
+        padding: EdgeInsets.all(8.0),
+        child: Row(
+          children: [
+            TaskStatusSummaryWidget(title: 'New', count: '12'),
+            TaskStatusSummaryWidget(title: 'Progress', count: '12'),
+            TaskStatusSummaryWidget(title: 'Complete', count: '12'),
+            TaskStatusSummaryWidget(title: 'Cancelled', count: '12'),
+          ],
+        ),
+      ),
     );
   }
 }
+

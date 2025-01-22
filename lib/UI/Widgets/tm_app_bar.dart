@@ -1,0 +1,44 @@
+import 'package:flutter/material.dart';
+
+import '../Utills/app_colors.dart';
+
+class TMAppBar extends StatelessWidget implements PreferredSizeWidget {
+  const TMAppBar({
+    super.key,
+  });
+
+
+  @override
+  Widget build(BuildContext context) {
+    final textTheme =Theme.of(context).textTheme;
+    return AppBar(
+      backgroundColor: AppColor.themeColor,
+      title:  Row(
+        children: [
+          const CircleAvatar(
+            radius: 16,
+          ),
+          const SizedBox(width: 8,),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text("Rabil Hasan",style:textTheme.titleSmall!.copyWith(
+                    color: Colors.white
+                )),
+                Text("rabil@gmail.com",style: textTheme.bodyLarge!.copyWith(
+                    color: Colors.white
+                ),)
+              ],
+            ),
+          ),
+          IconButton(onPressed: (){}, icon: const Icon(Icons.logout))
+        ],
+      ),
+    );
+  }
+
+  @override
+  // TODO: implement preferredSize
+  Size get preferredSize => const Size.fromHeight(56);
+}
