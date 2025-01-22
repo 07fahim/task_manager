@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:task_manager/UI/Screens/add_new_task_screen.dart';
+import 'package:task_manager/UI/Utills/app_colors.dart';
 import 'package:task_manager/UI/Widgets/screen_background.dart';
 
 import '../Widgets/task_items_widget.dart';
@@ -30,17 +32,26 @@ class _NewTaskListScreenState extends State<NewTaskListScreen> {
           ),
         ),
       ),
+      floatingActionButton: FloatingActionButton(
+        backgroundColor: AppColor.themeColor,
+        foregroundColor: Colors.white,
+        shape: const CircleBorder(),
+        onPressed: () {
+          Navigator.pushNamed(context, AddNewTaskScreen.name);
+        },
+        child: const Icon(Icons.add),
+      ),
     );
   }
 
   ListView _buildTasksListView() {
     return ListView.builder(
-                primary: false,
-                shrinkWrap: true,
-                itemCount: 10,
-                itemBuilder: (context, index) {
-                  return const TaskItemsWidget();
-                });
+        primary: false,
+        shrinkWrap: true,
+        itemCount: 10,
+        itemBuilder: (context, index) {
+          return const TaskItemsWidget();
+        });
   }
 
   Widget _buildTasksSummaryByStatus() {
@@ -60,4 +71,3 @@ class _NewTaskListScreenState extends State<NewTaskListScreen> {
     );
   }
 }
-
