@@ -33,7 +33,7 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
               children: [
                 const SizedBox(height:48),
                 Text(
-                  'Join With Us',
+                  'Update Profile',
                   style: textTheme.titleLarge,
                 ),
                 const SizedBox(height: 24),
