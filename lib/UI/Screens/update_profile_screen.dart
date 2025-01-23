@@ -22,7 +22,9 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
     return  Scaffold(
-      appBar: const TMAppBar(),
+      appBar: const TMAppBar(
+        fromUpdateProfile: true,
+      ),
       body: ScreenBackground(
         child: Form(
           child: Padding(

@@ -6,9 +6,10 @@ import '../Utills/app_colors.dart';
 class TMAppBar extends StatelessWidget implements PreferredSizeWidget {
   const TMAppBar({
     super.key,
+     this.fromUpdateProfile=false
   });
 
-
+ final bool fromUpdateProfile;
   @override
   Widget build(BuildContext context) {
     final textTheme =Theme.of(context).textTheme;
@@ -23,7 +24,9 @@ class TMAppBar extends StatelessWidget implements PreferredSizeWidget {
           Expanded(
             child: GestureDetector(
               onTap: (){
-                Navigator.pushNamed(context, UpdateProfileScreen.name);
+                if(!fromUpdateProfile){
+                  Navigator.pushNamed(context, UpdateProfileScreen.name);
+                }
               },
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
