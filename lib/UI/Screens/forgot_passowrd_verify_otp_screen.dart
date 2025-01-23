@@ -52,7 +52,7 @@ class _ForgotPasswordVerifyOtpScreenState
                     onPressed: () {
                       Navigator.pushNamed(context, ResetPasswordScreen.name);
                     },
-                    child: const Icon(Icons.arrow_circle_right_outlined)),
+                    child: const Icon(Icons.arrow_circle_right,size: 30,)),
                 const SizedBox(height: 48),
                 Center(
                   child: _buildSignInSection(),
