@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:task_manager/UI/Screens/update_profile_screen.dart';
 
 import '../Utills/app_colors.dart';
 
@@ -20,16 +21,21 @@ class TMAppBar extends StatelessWidget implements PreferredSizeWidget {
           ),
           const SizedBox(width: 8,),
           Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text("Rabil Hasan",style:textTheme.titleSmall!.copyWith(
-                    color: Colors.white
-                )),
-                Text("rabil@gmail.com",style: textTheme.bodyLarge!.copyWith(
-                    color: Colors.white
-                ),)
-              ],
+            child: GestureDetector(
+              onTap: (){
+                Navigator.pushNamed(context, UpdateProfileScreen.name);
+              },
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text("Rabil Hasan",style:textTheme.titleSmall!.copyWith(
+                      color: Colors.white
+                  )),
+                  Text("rabil@gmail.com",style: textTheme.bodyLarge!.copyWith(
+                      color: Colors.white
+                  ),)
+                ],
+              ),
             ),
           ),
           IconButton(onPressed: (){}, icon: const Icon(Icons.logout))

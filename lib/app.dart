@@ -7,6 +7,7 @@ import 'package:task_manager/UI/Screens/reset_password_screen.dart';
 import 'package:task_manager/UI/Screens/sign_in_screen.dart';
 import 'package:task_manager/UI/Screens/sign_up_screen.dart';
 import 'package:task_manager/UI/Screens/splash_screen.dart';
+import 'package:task_manager/UI/Screens/update_profile_screen.dart';
 import 'package:task_manager/UI/Utills/app_colors.dart';
 
 class TaskManager extends StatelessWidget {
@@ -64,6 +65,8 @@ class TaskManager extends StatelessWidget {
             widget = const MainBottomNavScreen();
           }else if (settings.name == AddNewTaskScreen.name) {
             widget = const AddNewTaskScreen();
+          } else if (settings.name==UpdateProfileScreen.name){
+            widget =const UpdateProfileScreen();
           }
           return MaterialPageRoute(builder: (_) => widget);
         });
