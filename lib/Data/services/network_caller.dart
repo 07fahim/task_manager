@@ -19,22 +19,53 @@ class NetworkResponse {
 class NetworkCaller {
   static Future<NetworkResponse> getRequest(
       {required String url, required Map<String, dynamic>? params}) async {
-    Uri uri = Uri.parse(url);
-    debugPrint("URL => $url");
-    Response response = await get(uri);
-    debugPrint("Response code => ${response.statusCode}");
-    debugPrint("Response code => ${response.body}");
+    try {
+      Uri uri = Uri.parse(url);
+      debugPrint("URL => $url");
+      Response response = await get(uri);
+      debugPrint("Response code => ${response.statusCode}");
+      debugPrint("Response code => ${response.body}");
 
-    if (response.statusCode == 200) {
-      final decodedResponse = jsonDecode(response.body);
+      if (response.statusCode == 200) {
+        final decodedResponse = jsonDecode(response.body);
+        return NetworkResponse(
+            statusCode: response.statusCode,
+            isSuccess: true,
+            responseData: decodedResponse);
+      } else {
+        return NetworkResponse(
+            statusCode: response.statusCode, isSuccess: false);
+      }
+    } catch (e) {
       return NetworkResponse(
-          statusCode: response.statusCode,
-          isSuccess: true,
-          responseData: decodedResponse);
-    } else {
+          statusCode: -1, isSuccess: false, errorMessage: e.toString());
+    }
+  }
+
+  static Future<NetworkResponse> postRequest(
+      {required String url, required Map<String, dynamic>? body}) async {
+    try {
+      Uri uri = Uri.parse(url);
+      debugPrint("URL => $url");
+      Response response = await post(uri,
+          headers: {'content-type': 'application/jason'},
+          body: jsonEncode(body));
+      debugPrint("Response code => ${response.statusCode}");
+      debugPrint("Response code => ${response.body}");
+
+      if (response.statusCode == 200) {
+        final decodedResponse = jsonDecode(response.body);
+        return NetworkResponse(
+            statusCode: response.statusCode,
+            isSuccess: true,
+            responseData: decodedResponse);
+      } else {
+        return NetworkResponse(
+            statusCode: response.statusCode, isSuccess: false);
+      }
+    } catch (e) {
       return NetworkResponse(
-          statusCode: response.statusCode,
-          isSuccess: false);
+          statusCode: -1, isSuccess: false, errorMessage: e.toString());
     }
   }
 }
