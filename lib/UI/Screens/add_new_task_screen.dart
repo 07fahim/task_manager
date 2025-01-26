@@ -1,6 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:task_manager/UI/Widgets/circular_progress_indicator.dart';
 import 'package:task_manager/UI/Widgets/screen_background.dart';
+import 'package:task_manager/UI/Widgets/show_snackbar_message.dart';
 import 'package:task_manager/UI/Widgets/tm_app_bar.dart';
+
+import '../../Data/services/network_caller.dart';
+import '../../Data/utils/urls.dart';
 
 class AddNewTaskScreen extends StatefulWidget {
   const AddNewTaskScreen({super.key});
@@ -67,11 +72,17 @@ class _AddNewTaskScreenState extends State<AddNewTaskScreen> {
                 const SizedBox(
                   height: 24,
                 ),
-                ElevatedButton(
-                    onPressed: () {
-                      if (_formKey.currentState!.validate()) ;
-                    },
-                    child: const Icon(Icons.arrow_circle_right_outlined)),
+                Visibility(
+                  visible: _addNewTaskInProgress==false,
+                  replacement: const CenteredCircularProgressIndicator(),
+                  child: ElevatedButton(
+                      onPressed: () {
+                        if (_formKey.currentState!.validate()) {
+                          _createNewTask();
+                        }
+                      },
+                      child: const Icon(Icons.arrow_circle_right_outlined)),
+                ),
               ],
             ),
           ),
@@ -83,6 +94,28 @@ class _AddNewTaskScreenState extends State<AddNewTaskScreen> {
   Future<void> _createNewTask() async {
     _addNewTaskInProgress = true;
     setState(() {});
+
+    Map<String, dynamic> requestBody = {
+      "title": _titleTextController.text.trim(),
+      "description": _descriptionTextController.text.trim(),
+      "status": "New"
+    };
+
+    final NetworkResponse response = await NetworkCaller.postRequest(
+        url: Urls.createTaskUrl, body: requestBody);
+    _addNewTaskInProgress = false;
+    setState(() {});
+    if (response.isSuccess) {
+      _clearTextField();
+      showSnackBarMessage(context, "New task added!");
+    } else {
+      showSnackBarMessage(context, response.errorMessage);
+    }
+  }
+
+  void _clearTextField(){
+    _titleTextController.clear();
+    _descriptionTextController.clear();
   }
 
   @override
