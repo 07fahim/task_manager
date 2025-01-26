@@ -3,9 +3,13 @@ import 'package:flutter/material.dart';
 import 'package:task_manager/UI/Screens/forgot_passowrd_verify_email_screen.dart';
 import 'package:task_manager/UI/Screens/main_bottom_nav_screen.dart';
 import 'package:task_manager/UI/Screens/sign_up_screen.dart';
+import 'package:task_manager/UI/Widgets/circular_progress_indicator.dart';
 import 'package:task_manager/UI/Widgets/screen_background.dart';
 
+import '../../Data/services/network_caller.dart';
+import '../../Data/utils/urls.dart';
 import '../Utills/app_colors.dart';
+import '../Widgets/show_snackbar_message.dart';
 
 class SignInScreen extends StatefulWidget {
   const SignInScreen({super.key});
@@ -20,6 +24,7 @@ class _SignInScreenState extends State<SignInScreen> {
   final TextEditingController _emailTextController = TextEditingController();
   final TextEditingController _passTextController = TextEditingController();
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  bool _signInProgress = false;
 
   @override
   Widget build(BuildContext context) {
@@ -69,15 +74,16 @@ class _SignInScreenState extends State<SignInScreen> {
                   },
                 ),
                 const SizedBox(height: 24),
-                ElevatedButton(
-                    onPressed: () {
-                      Navigator.pushReplacementNamed(
-                          context, MainBottomNavScreen.name);
-                    },
-                    child: const Icon(
-                      Icons.arrow_circle_right,
-                      size: 30,
-                    )),
+                Visibility(
+                  visible: _signInProgress==false,
+                  replacement: const CenteredCircularProgressIndicator(),
+                  child: ElevatedButton(
+                      onPressed: _onTapSignINButton,
+                      child: const Icon(
+                        Icons.arrow_circle_right,
+                        size: 30,
+                      )),
+                ),
                 const SizedBox(height: 48),
                 Center(
                   child: Column(
@@ -101,6 +107,42 @@ class _SignInScreenState extends State<SignInScreen> {
         ),
       )),
     );
+  }
+
+  void _onTapSignINButton() {
+    if (_formKey.currentState!.validate()) {
+      _signIn();
+    }
+  }
+
+  Future<void> _signIn() async {
+    _signInProgress = true;
+    setState(() {});
+
+    Map<String, dynamic> requestBody = {
+      "email": _emailTextController.text.trim(),
+      "password": _passTextController.text,
+    };
+
+    final NetworkResponse response = await NetworkCaller.postRequest(
+        url: Urls.logInUrl, body: requestBody);
+
+    if (response.isSuccess) {
+      _clearTextField();
+      Navigator.pushReplacementNamed(context, MainBottomNavScreen.name);
+    } else {
+      _signInProgress = false;
+      setState(() {});
+      if (response.statusCode == 401) {
+        showSnackBarMessage(context, 'Email/Password is invalid! Try again.');
+        showSnackBarMessage(context, response.errorMessage);
+      }
+    }
+  }
+
+  void _clearTextField() {
+    _passTextController.clear();
+    _emailTextController.clear();
   }
 
   Widget _buildSignUpSection() {

@@ -144,7 +144,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
   }
 
   Future<void> _registerUser() async {
-    setState(() => _signUpInProgress = true);
+    _signUpInProgress = true;
+    setState(() {});
 
     Map<String, dynamic> requestBody = {
       "email": _emailTextController.text.trim(),
