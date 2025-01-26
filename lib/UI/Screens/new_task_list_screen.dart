@@ -15,6 +15,8 @@ class NewTaskListScreen extends StatefulWidget {
 }
 
 class _NewTaskListScreenState extends State<NewTaskListScreen> {
+  bool _getTaskCountByStatusInProgress = false;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -69,5 +71,11 @@ class _NewTaskListScreenState extends State<NewTaskListScreen> {
         ),
       ),
     );
+  }
+
+  Future<void> _getTaskCountByStatus() async {
+    _getTaskCountByStatusInProgress = true;
+    setState(() {});
+
   }
 }
