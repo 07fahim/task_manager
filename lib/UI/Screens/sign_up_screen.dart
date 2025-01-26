@@ -1,6 +1,10 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:task_manager/Data/services/network_caller.dart';
+import 'package:task_manager/Data/utils/urls.dart';
+import 'package:task_manager/UI/Widgets/circular_progress_indicator.dart';
 import 'package:task_manager/UI/Widgets/screen_background.dart';
+import 'package:task_manager/UI/Widgets/show_snackbar_message.dart';
 
 import '../Utills/app_colors.dart';
 
@@ -15,11 +19,13 @@ class SignUpScreen extends StatefulWidget {
 
 class _SignUpScreenState extends State<SignUpScreen> {
   final TextEditingController _emailTextController = TextEditingController();
-  final TextEditingController _firstNameTextController = TextEditingController();
+  final TextEditingController _firstNameTextController =
+      TextEditingController();
   final TextEditingController _lastNameTextController = TextEditingController();
   final TextEditingController _mobileTextController = TextEditingController();
   final TextEditingController _passTextController = TextEditingController();
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  bool _signUpInProgress = false;
 
   @override
   Widget build(BuildContext context) {
@@ -44,8 +50,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   controller: _emailTextController,
                   keyboardType: TextInputType.emailAddress,
                   decoration: const InputDecoration(hintText: "Email"),
-                  validator: (String? value){
-                    if((value?.trim().isEmpty ?? true)){
+                  validator: (String? value) {
+                    if ((value?.trim().isEmpty ?? true)) {
                       return 'Enter your email';
                     }
                     return null;
@@ -54,12 +60,11 @@ class _SignUpScreenState extends State<SignUpScreen> {
                 const SizedBox(height: 8),
                 TextFormField(
                   controller: _firstNameTextController,
-                  obscureText: true,
                   decoration: const InputDecoration(
                     hintText: "First Name",
                   ),
-                  validator: (String? value){
-                    if((value?.trim().isEmpty ?? true)){
+                  validator: (String? value) {
+                    if ((value?.trim().isEmpty ?? true)) {
                       return 'Enter your first name';
                     }
                     return null;
@@ -68,12 +73,11 @@ class _SignUpScreenState extends State<SignUpScreen> {
                 const SizedBox(height: 8),
                 TextFormField(
                   controller: _lastNameTextController,
-                  obscureText: true,
                   decoration: const InputDecoration(
                     hintText: "Last Name",
                   ),
-                  validator: (String? value){
-                    if((value?.trim().isEmpty ?? true)){
+                  validator: (String? value) {
+                    if ((value?.trim().isEmpty ?? true)) {
                       return 'Enter your last name';
                     }
                     return null;
@@ -83,12 +87,11 @@ class _SignUpScreenState extends State<SignUpScreen> {
                 TextFormField(
                   keyboardType: TextInputType.number,
                   controller: _mobileTextController,
-                  obscureText: true,
                   decoration: const InputDecoration(
                     hintText: "Mobile",
                   ),
-                  validator: (String? value){
-                    if((value?.trim().isEmpty ?? true)){
+                  validator: (String? value) {
+                    if ((value?.trim().isEmpty ?? true)) {
                       return 'Enter your mobile number';
                     }
                     return null;
@@ -101,17 +104,27 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   decoration: const InputDecoration(
                     hintText: "Password",
                   ),
-                  validator: (String? value){
-                    if((value?.trim().isEmpty ?? true)){
+                  validator: (String? value) {
+                    if ((value?.trim().isEmpty ?? true)) {
                       return 'Enter your password';
+                    }
+                    if(value!.length<6){
+                      return "Enter a password more than 6 letters";
                     }
                     return null;
                   },
                 ),
                 const SizedBox(height: 24),
-                ElevatedButton(
-                    onPressed: _onTapSignUpButton,
-                    child: const Icon(Icons.arrow_circle_right,size: 30,)),
+                Visibility(
+                  visible: _signUpInProgress == false,
+                  replacement: const CenteredCircularProgressIndicator(),
+                  child: ElevatedButton(
+                      onPressed: _onTapSignUpButton,
+                      child: const Icon(
+                        Icons.arrow_circle_right,
+                        size: 30,
+                      )),
+                ),
                 const SizedBox(height: 48),
                 Center(
                   child: _buildSignInSection(),
@@ -124,10 +137,44 @@ class _SignUpScreenState extends State<SignUpScreen> {
     );
   }
 
-  void _onTapSignUpButton(){
-    if(_formKey.currentState!.validate()){}
+  void _onTapSignUpButton() {
+    if (_formKey.currentState!.validate()) {
+      _registerUser();
+    }
+  }
 
-}
+  Future<void> _registerUser() async {
+    setState(() => _signUpInProgress = true);
+
+    Map<String, dynamic> requestBody = {
+      "email": _emailTextController.text.trim(),
+      "firstName": _firstNameTextController.text.trim(),
+      "lastName": _lastNameTextController.text.trim(),
+      "mobile": _mobileTextController.text.trim(),
+      "password": _passTextController.text,
+      "photo": "",
+    };
+
+    final NetworkResponse response = await NetworkCaller.postRequest(
+        url: Urls.registrationUrl, body: requestBody);
+    _signUpInProgress = false;
+    setState(() {});
+
+    if (response.isSuccess) {
+      _clearTextField();
+      showSnackBarMessage(context, "New user registration successful");
+    } else {
+      showSnackBarMessage(context, response.errorMessage);
+    }
+  }
+
+  void _clearTextField() {
+    _firstNameTextController.clear();
+    _lastNameTextController.clear();
+    _mobileTextController.clear();
+    _passTextController.clear();
+    _emailTextController.clear();
+  }
 
   Widget _buildSignInSection() {
     return RichText(
@@ -138,10 +185,12 @@ class _SignUpScreenState extends State<SignUpScreen> {
           children: [
             TextSpan(
               text: "Sign in",
-              style: const TextStyle(color: AppColor.themeColor,fontWeight: FontWeight.bold),
-              recognizer: TapGestureRecognizer()..onTap = () {
-                Navigator.pop(context);
-              },
+              style: const TextStyle(
+                  color: AppColor.themeColor, fontWeight: FontWeight.bold),
+              recognizer: TapGestureRecognizer()
+                ..onTap = () {
+                  Navigator.pop(context);
+                },
             )
           ]),
     );

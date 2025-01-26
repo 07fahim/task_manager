@@ -7,12 +7,12 @@ class NetworkResponse {
   final int statusCode;
   final Map<String, dynamic>? responseData;
   final bool isSuccess;
-  final String? errorMessage;
+  final String errorMessage;
 
   NetworkResponse(
       {required this.statusCode,
       required this.isSuccess,
-      this.errorMessage,
+      this.errorMessage ='Something went wrong!',
       this.responseData});
 }
 
@@ -47,6 +47,7 @@ class NetworkCaller {
     try {
       Uri uri = Uri.parse(url);
       debugPrint("URL => $url");
+      debugPrint("Body => $body");
       Response response = await post(uri,
           headers: {'content-type': 'application/jason'},
           body: jsonEncode(body));

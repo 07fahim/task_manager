@@ -44,6 +44,12 @@ class _SignInScreenState extends State<SignInScreen> {
                   controller: _emailTextController,
                   keyboardType: TextInputType.emailAddress,
                   decoration: const InputDecoration(hintText: "Email"),
+                  validator: (String? value) {
+                    if ((value?.trim().isEmpty ?? true)) {
+                      return 'Enter your email';
+                    }
+                    return null;
+                  },
                 ),
                 const SizedBox(height: 8),
                 TextFormField(
@@ -52,20 +58,34 @@ class _SignInScreenState extends State<SignInScreen> {
                   decoration: const InputDecoration(
                     hintText: "Password",
                   ),
+                  validator: (String? value) {
+                    if ((value?.trim().isEmpty ?? true)) {
+                      return 'Enter your password';
+                    }
+                    if (value!.length < 6) {
+                      return "Enter a password more than 6 letters";
+                    }
+                    return null;
+                  },
                 ),
                 const SizedBox(height: 24),
                 ElevatedButton(
                     onPressed: () {
-                      Navigator.pushReplacementNamed(context, MainBottomNavScreen.name);
+                      Navigator.pushReplacementNamed(
+                          context, MainBottomNavScreen.name);
                     },
-                    child: const Icon(Icons.arrow_circle_right,size: 30,)),
+                    child: const Icon(
+                      Icons.arrow_circle_right,
+                      size: 30,
+                    )),
                 const SizedBox(height: 48),
                 Center(
                   child: Column(
                     children: [
                       TextButton(
                           onPressed: () {
-                            Navigator.pushNamed(context, ForgotPasswordVerifyEmailScreen.name);
+                            Navigator.pushNamed(
+                                context, ForgotPasswordVerifyEmailScreen.name);
                           },
                           child: const Text(
                             "Forgot Password?",
