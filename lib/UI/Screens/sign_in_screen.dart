@@ -129,21 +129,27 @@ class _SignInScreenState extends State<SignInScreen> {
     final NetworkResponse response = await NetworkCaller.postRequest(
         url: Urls.logInUrl, body: requestBody);
 
-    if (response.isSuccess) {
+    if(response.isSuccess) {
+      debugPrint('Response Data: ${response.responseData}');
       String token = response.responseData!['token'];
       UserModel userModel = UserModel.fromJson(response.responseData!['data']);
       await AuthController.saveUserData(token, userModel);
       Navigator.pushReplacementNamed(context, MainBottomNavScreen.name);
     } else {
-      _signInProgress = false;
-      setState(() {});
-      if (response.statusCode == 401) {
-        showSnackBarMessage(context, 'Email/Password is invalid! Try again.');
-        showSnackBarMessage(context, response.errorMessage);
-      }
+    _signInProgress = false;
+    setState(() {});
+    if (response.statusCode == 401) {
+    showSnackBarMessage(context, 'Email/Password is invalid! Try again.');
+    } else {
+    showSnackBarMessage(context, response.errorMessage);
+    }
     }
   }
 
+  void _clearTextField() {
+    _passTextController.clear();
+    _emailTextController.clear();
+  }
 
   Widget _buildSignUpSection() {
     return RichText(

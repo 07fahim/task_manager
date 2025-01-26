@@ -1,47 +1,57 @@
 import 'package:flutter/material.dart';
+import 'package:task_manager/UI/Screens/sign_in_screen.dart';
 import 'package:task_manager/UI/Screens/update_profile_screen.dart';
+import 'package:task_manager/UI/controller/auth_controller.dart';
 
 import '../Utills/app_colors.dart';
 
 class TMAppBar extends StatelessWidget implements PreferredSizeWidget {
-  const TMAppBar({
-    super.key,
-     this.fromUpdateProfile=false
-  });
+  const TMAppBar({super.key, this.fromUpdateProfile = false});
 
- final bool fromUpdateProfile;
+  final bool fromUpdateProfile;
+
   @override
   Widget build(BuildContext context) {
-    final textTheme =Theme.of(context).textTheme;
+    final textTheme = Theme.of(context).textTheme;
     return AppBar(
       backgroundColor: AppColor.themeColor,
-      title:  Row(
+      title: Row(
         children: [
           const CircleAvatar(
             radius: 16,
           ),
-          const SizedBox(width: 8,),
+          const SizedBox(
+            width: 8,
+          ),
           Expanded(
             child: GestureDetector(
-              onTap: (){
-                if(!fromUpdateProfile){
+              onTap: () {
+                if (!fromUpdateProfile) {
                   Navigator.pushNamed(context, UpdateProfileScreen.name);
                 }
               },
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text("Rabil Hasan",style:textTheme.titleSmall!.copyWith(
-                      color: Colors.white
-                  )),
-                  Text("rabil@gmail.com",style: textTheme.bodyLarge!.copyWith(
-                      color: Colors.white
-                  ),)
+                  Text(
+                  AuthController.userModel?.fullName ?? '',
+                      style:
+                          textTheme.titleSmall!.copyWith(color: Colors.white)),
+                  Text(
+                    AuthController.userModel?.email ?? '',
+                    style: textTheme.bodyLarge!.copyWith(color: Colors.white),
+                  )
                 ],
               ),
             ),
           ),
-          IconButton(onPressed: (){}, icon: const Icon(Icons.logout))
+          IconButton(
+              onPressed: () async {
+                await AuthController.clearUserData();
+                Navigator.pushNamedAndRemoveUntil(
+                    context, SignInScreen.name, (predicate) => false);
+              },
+              icon: const Icon(Icons.logout))
         ],
       ),
     );
