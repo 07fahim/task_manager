@@ -5,7 +5,7 @@ import 'package:task_manager/UI/Widgets/tm_app_bar.dart';
 class AddNewTaskScreen extends StatefulWidget {
   const AddNewTaskScreen({super.key});
 
-  static const String  name='/add-new-task';
+  static const String name = '/add-new-task';
 
   @override
   State<AddNewTaskScreen> createState() => _AddNewTaskScreenState();
@@ -13,8 +13,11 @@ class AddNewTaskScreen extends StatefulWidget {
 
 class _AddNewTaskScreenState extends State<AddNewTaskScreen> {
   final TextEditingController _titleTextController = TextEditingController();
-  final TextEditingController _descriptionTextController = TextEditingController();
+  final TextEditingController _descriptionTextController =
+      TextEditingController();
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  bool _addNewTaskInProgress = false;
+
   @override
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
@@ -28,29 +31,47 @@ class _AddNewTaskScreenState extends State<AddNewTaskScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-               const SizedBox(height: 32,),
-                Text("Add New Task",style: textTheme.titleLarge),
-                const SizedBox(height: 16,),
+                const SizedBox(
+                  height: 32,
+                ),
+                Text("Add New Task", style: textTheme.titleLarge),
+                const SizedBox(
+                  height: 16,
+                ),
                 TextFormField(
                   controller: _titleTextController,
                   decoration: const InputDecoration(
-                    hintText: "Title"
+                    hintText: "Title",
                   ),
+                  validator: (String? value) {
+                    if ((value?.trim().isEmpty ?? true)) {
+                      return 'Enter your title';
+                    }
+                    return null;
+                  },
                 ),
-                const SizedBox(height: 16,),
+                const SizedBox(
+                  height: 16,
+                ),
                 TextFormField(
                   controller: _descriptionTextController,
                   maxLines: 6,
-                  decoration: const InputDecoration(
-                      hintText: "Description"
-                  ),
+                  decoration: const InputDecoration(hintText: "Description"),
+                  validator: (String? value) {
+                    if ((value?.trim().isEmpty ?? true)) {
+                      return 'Enter your description';
+                    }
+                    return null;
+                  },
                 ),
-                const SizedBox(height:24,),
+                const SizedBox(
+                  height: 24,
+                ),
                 ElevatedButton(
                     onPressed: () {
+                      if (_formKey.currentState!.validate()) ;
                     },
                     child: const Icon(Icons.arrow_circle_right_outlined)),
-
               ],
             ),
           ),
@@ -58,6 +79,12 @@ class _AddNewTaskScreenState extends State<AddNewTaskScreen> {
       ),
     );
   }
+
+  Future<void> _createNewTask() async {
+    _addNewTaskInProgress = true;
+    setState(() {});
+  }
+
   @override
   void dispose() {
     _titleTextController.dispose();
