@@ -110,7 +110,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                 ),
                 const SizedBox(height: 24),
                 ElevatedButton(
-                    onPressed: () {},
+                    onPressed: _onTapSignUpButton,
                     child: const Icon(Icons.arrow_circle_right,size: 30,)),
                 const SizedBox(height: 48),
                 Center(
