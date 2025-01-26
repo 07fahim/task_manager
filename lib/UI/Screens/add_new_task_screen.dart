@@ -73,7 +73,7 @@ class _AddNewTaskScreenState extends State<AddNewTaskScreen> {
                   height: 24,
                 ),
                 Visibility(
-                  visible: _addNewTaskInProgress==false,
+                  visible: _addNewTaskInProgress == false,
                   replacement: const CenteredCircularProgressIndicator(),
                   child: ElevatedButton(
                       onPressed: () {
@@ -81,7 +81,10 @@ class _AddNewTaskScreenState extends State<AddNewTaskScreen> {
                           _createNewTask();
                         }
                       },
-                      child: const Icon(Icons.arrow_circle_right_outlined)),
+                      child: const Icon(
+                        Icons.arrow_circle_right,
+                        size: 30,
+                      )),
                 ),
               ],
             ),
@@ -113,7 +116,7 @@ class _AddNewTaskScreenState extends State<AddNewTaskScreen> {
     }
   }
 
-  void _clearTextField(){
+  void _clearTextField() {
     _titleTextController.clear();
     _descriptionTextController.clear();
   }
