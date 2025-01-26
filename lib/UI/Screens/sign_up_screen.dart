@@ -48,6 +48,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     if((value?.trim().isEmpty ?? true)){
                       return 'Enter your email';
                     }
+                    return null;
                   },
                 ),
                 const SizedBox(height: 8),
@@ -61,6 +62,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     if((value?.trim().isEmpty ?? true)){
                       return 'Enter your first name';
                     }
+                    return null;
                   },
                 ),
                 const SizedBox(height: 8),
@@ -74,6 +76,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     if((value?.trim().isEmpty ?? true)){
                       return 'Enter your last name';
                     }
+                    return null;
                   },
                 ),
                 const SizedBox(height: 8),
@@ -88,6 +91,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     if((value?.trim().isEmpty ?? true)){
                       return 'Enter your mobile number';
                     }
+                    return null;
                   },
                 ),
                 const SizedBox(height: 8),
@@ -101,6 +105,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     if((value?.trim().isEmpty ?? true)){
                       return 'Enter your password';
                     }
+                    return null;
                   },
                 ),
                 const SizedBox(height: 24),
