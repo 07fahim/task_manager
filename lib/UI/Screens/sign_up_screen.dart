@@ -44,6 +44,11 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   controller: _emailTextController,
                   keyboardType: TextInputType.emailAddress,
                   decoration: const InputDecoration(hintText: "Email"),
+                  validator: (String? value){
+                    if((value?.trim().isEmpty ?? true)){
+                      return 'Enter your email';
+                    }
+                  },
                 ),
                 const SizedBox(height: 8),
                 TextFormField(
@@ -52,6 +57,11 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   decoration: const InputDecoration(
                     hintText: "First Name",
                   ),
+                  validator: (String? value){
+                    if((value?.trim().isEmpty ?? true)){
+                      return 'Enter your first name';
+                    }
+                  },
                 ),
                 const SizedBox(height: 8),
                 TextFormField(
@@ -60,6 +70,11 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   decoration: const InputDecoration(
                     hintText: "Last Name",
                   ),
+                  validator: (String? value){
+                    if((value?.trim().isEmpty ?? true)){
+                      return 'Enter your last name';
+                    }
+                  },
                 ),
                 const SizedBox(height: 8),
                 TextFormField(
@@ -69,6 +84,11 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   decoration: const InputDecoration(
                     hintText: "Mobile",
                   ),
+                  validator: (String? value){
+                    if((value?.trim().isEmpty ?? true)){
+                      return 'Enter your mobile number';
+                    }
+                  },
                 ),
                 const SizedBox(height: 8),
                 TextFormField(
@@ -77,6 +97,11 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   decoration: const InputDecoration(
                     hintText: "Password",
                   ),
+                  validator: (String? value){
+                    if((value?.trim().isEmpty ?? true)){
+                      return 'Enter your password';
+                    }
+                  },
                 ),
                 const SizedBox(height: 24),
                 ElevatedButton(
