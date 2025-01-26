@@ -124,6 +124,11 @@ class _SignUpScreenState extends State<SignUpScreen> {
     );
   }
 
+  void _onTapSignUpButton(){
+    if(_formKey.currentState!.validate()){}
+
+}
+
   Widget _buildSignInSection() {
     return RichText(
       text: TextSpan(
