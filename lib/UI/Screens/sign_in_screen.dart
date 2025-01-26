@@ -6,10 +6,12 @@ import 'package:task_manager/UI/Screens/sign_up_screen.dart';
 import 'package:task_manager/UI/Widgets/circular_progress_indicator.dart';
 import 'package:task_manager/UI/Widgets/screen_background.dart';
 
+import '../../Data/models/user_model.dart';
 import '../../Data/services/network_caller.dart';
 import '../../Data/utils/urls.dart';
 import '../Utills/app_colors.dart';
 import '../Widgets/show_snackbar_message.dart';
+import '../controller/auth_controller.dart';
 
 class SignInScreen extends StatefulWidget {
   const SignInScreen({super.key});
@@ -128,7 +130,9 @@ class _SignInScreenState extends State<SignInScreen> {
         url: Urls.logInUrl, body: requestBody);
 
     if (response.isSuccess) {
-      _clearTextField();
+      String token = response.responseData!['token'];
+      UserModel userModel = UserModel.fromJson(response.responseData!['data']);
+      await AuthController.saveUserData(token, userModel);
       Navigator.pushReplacementNamed(context, MainBottomNavScreen.name);
     } else {
       _signInProgress = false;
@@ -140,10 +144,6 @@ class _SignInScreenState extends State<SignInScreen> {
     }
   }
 
-  void _clearTextField() {
-    _passTextController.clear();
-    _emailTextController.clear();
-  }
 
   Widget _buildSignUpSection() {
     return RichText(
