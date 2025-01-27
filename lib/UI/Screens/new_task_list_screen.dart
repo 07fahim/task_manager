@@ -1,8 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:task_manager/Data/models/task_count_by_status_model.dart';
 import 'package:task_manager/UI/Screens/add_new_task_screen.dart';
 import 'package:task_manager/UI/Utills/app_colors.dart';
+import 'package:task_manager/UI/Widgets/circular_progress_indicator.dart';
 import 'package:task_manager/UI/Widgets/screen_background.dart';
+import 'package:task_manager/UI/Widgets/show_snackbar_message.dart';
 
+import '../../Data/models/task_count_model.dart';
+import '../../Data/services/network_caller.dart';
+import '../../Data/utils/urls.dart';
 import '../Widgets/task_items_widget.dart';
 import '../Widgets/task_status_summary_counter_widget.dart';
 import '../Widgets/tm_app_bar.dart';
@@ -16,6 +22,14 @@ class NewTaskListScreen extends StatefulWidget {
 
 class _NewTaskListScreenState extends State<NewTaskListScreen> {
   bool _getTaskCountByStatusInProgress = false;
+  bool _getNewTaskListInProgress = false;
+  TaskCountByStatusModel? taskCountByStatusModel;
+
+  @override
+  void initState() {
+    super.initState();
+    _getTaskCountByStatus();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -57,25 +71,62 @@ class _NewTaskListScreenState extends State<NewTaskListScreen> {
   }
 
   Widget _buildTasksSummaryByStatus() {
-    return const SingleChildScrollView(
-      scrollDirection: Axis.horizontal,
-      child: Padding(
-        padding: EdgeInsets.all(8.0),
-        child: Row(
-          children: [
-            TaskStatusSummaryWidget(title: 'New', count: '12'),
-            TaskStatusSummaryWidget(title: 'Progress', count: '12'),
-            TaskStatusSummaryWidget(title: 'Complete', count: '12'),
-            TaskStatusSummaryWidget(title: 'Cancelled', count: '12'),
-          ],
-        ),
-      ),
-    );
+    return SingleChildScrollView(
+        scrollDirection: Axis.horizontal,
+        child: Visibility(
+          visible: _getTaskCountByStatusInProgress == false,
+          replacement: const CenteredCircularProgressIndicator(),
+          child: Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: SizedBox(
+              height: 110,
+              child: ListView.builder(
+                scrollDirection: Axis.horizontal,
+                  shrinkWrap: true,
+                  itemCount: taskCountByStatusModel?.taskStatusList?.length ?? 0,
+                  itemBuilder: (context, index) {
+                    final TaskCountModel model =
+                        taskCountByStatusModel!.taskStatusList![index];
+                    return TaskStatusSummaryWidget(
+                        title: model.sId ?? '',
+                        count: model.sum.toString());
+                  }),
+            ),
+          ),
+        ));
   }
 
   Future<void> _getTaskCountByStatus() async {
     _getTaskCountByStatusInProgress = true;
     setState(() {});
 
+    final NetworkResponse response =
+        await NetworkCaller.getRequest(url: Urls.taskCountByStatusUrl);
+
+    if (response.isSuccess) {
+      taskCountByStatusModel =
+          TaskCountByStatusModel.fromJson(response.responseData!);
+    } else {
+      showSnackBarMessage(context, response.errorMessage);
+    }
+    _getTaskCountByStatusInProgress = false;
+    setState(() {});
+  }
+
+  Future<void> _getNewTaskList() async {
+    _getNewTaskListInProgress = true;
+    setState(() {});
+
+    final NetworkResponse response =
+    await NetworkCaller.getRequest(url: Urls.taskListByStatusUrl('New'));
+
+    if (response.isSuccess) {
+      taskCountByStatusModel =
+          TaskCountByStatusModel.fromJson(response.responseData!);
+    } else {
+      showSnackBarMessage(context, response.errorMessage);
+    }
+    _getTaskCountByStatusInProgress = false;
+    setState(() {});
   }
 }
