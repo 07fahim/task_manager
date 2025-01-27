@@ -72,7 +72,8 @@ class _NewTaskListScreenState extends State<NewTaskListScreen> {
         shrinkWrap: true,
         itemCount: newTaskListModel?.taskList?.length ?? 0,
         itemBuilder: (context, index) {
-          return  TaskItemsWidget(taskModel: newTaskListModel!.taskList![index],);
+          return  TaskItemsWidget(
+            taskModel: newTaskListModel!.taskList![index],);
         });
   }
 

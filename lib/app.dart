@@ -10,13 +10,16 @@ import 'package:task_manager/UI/Screens/splash_screen.dart';
 import 'package:task_manager/UI/Screens/update_profile_screen.dart';
 import 'package:task_manager/UI/Utills/app_colors.dart';
 
-class TaskManager extends StatelessWidget {
-  const TaskManager({super.key});
+class TaskManagerApp extends StatelessWidget {
+  const TaskManagerApp({super.key});
+
+  static GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
         initialRoute: '/',
+        navigatorKey:navigatorKey ,
         theme: ThemeData(
             colorSchemeSeed: AppColor.themeColor,
             textTheme: const TextTheme(

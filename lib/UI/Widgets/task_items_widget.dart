@@ -5,7 +5,8 @@ import '../Utills/app_colors.dart';
 
 class TaskItemsWidget extends StatelessWidget {
   const TaskItemsWidget({
-    super.key, required this.taskModel,
+    super.key,
+    required this.taskModel,
   });
 
   final TaskModel taskModel;
@@ -17,28 +18,26 @@ class TaskItemsWidget extends StatelessWidget {
       elevation: 0,
       child: ListTile(
         tileColor: Colors.white,
-        title:  Text(taskModel.title ?? ''),
+        title: Text(taskModel.title ?? ''),
         subtitle: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-             Text(taskModel.description ?? ''),
-             Text("Date:${taskModel.createdDate ?? ''}"),
+            Text(taskModel.description ?? ''),
+            Text("Date:${taskModel.createdDate ?? ''}"),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                const Chip(
-                  label: Text("New"),
-                  padding: EdgeInsets.symmetric(
-                      horizontal: 40, vertical: 4),
-                  backgroundColor: Colors.lightBlueAccent,
+                Chip(
+                  label: Text(taskModel.status ?? 'New'),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 40, vertical: 4),
+                  backgroundColor: _getStatusColor(taskModel.status ?? 'New'),
                   elevation: 0,
-                  shape: RoundedRectangleBorder(
-                      borderRadius:
-                      BorderRadius.all(Radius.circular(30)),
-                      side: BorderSide(
-                          width: 1, color: Colors.transparent)),
-                  labelStyle: TextStyle(
-                      fontSize: 16, color: Colors.white),
+                  shape: const RoundedRectangleBorder(
+                      borderRadius: BorderRadius.all(Radius.circular(30)),
+                      side: BorderSide(width: 1, color: Colors.transparent)),
+                  labelStyle:
+                      const TextStyle(fontSize: 16, color: Colors.white),
                 ),
                 Row(
                   children: [
@@ -50,9 +49,9 @@ class TaskItemsWidget extends StatelessWidget {
                         )),
                     IconButton(
                         onPressed: () {},
-                        icon:  Icon(
+                        icon: Icon(
                           Icons.delete_rounded,
-                          color:Colors.red.shade400,
+                          color: Colors.red.shade400,
                         ))
                   ],
                 )
@@ -62,5 +61,17 @@ class TaskItemsWidget extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  Color _getStatusColor(String status) {
+    if (status == 'New') {
+      return Colors.lightBlueAccent;
+    } else if (status == 'Progress') {
+      return Colors.yellow;
+    } else if (status == 'Cancelled') {
+      return Colors.red;
+    } else {
+      return Colors.green;
+    }
   }
 }
