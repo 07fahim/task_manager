@@ -1,3 +1,4 @@
+
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:task_manager/Data/services/network_caller.dart';
@@ -6,19 +7,19 @@ import 'package:task_manager/UI/Screens/forgot_passowrd_verify_otp_screen.dart';
 import 'package:task_manager/UI/Widgets/circular_progress_indicator.dart';
 import 'package:task_manager/UI/Widgets/screen_background.dart';
 import 'package:task_manager/UI/Widgets/show_snackbar_message.dart';
-
 import '../Utills/app_colors.dart';
 
 class ForgotPasswordVerifyEmailScreen extends StatefulWidget {
   const ForgotPasswordVerifyEmailScreen({super.key});
-
   static const String name = '/forgot-password/email-verify';
 
   @override
-  State<ForgotPasswordVerifyEmailScreen> createState() => _ForgotPasswordVerifyEmailScreenState();
+  State<ForgotPasswordVerifyEmailScreen> createState() =>
+      _ForgotPasswordVerifyEmailScreenState();
 }
 
-class _ForgotPasswordVerifyEmailScreenState extends State<ForgotPasswordVerifyEmailScreen> {
+class _ForgotPasswordVerifyEmailScreenState
+    extends State<ForgotPasswordVerifyEmailScreen> {
   final TextEditingController _emailTextController = TextEditingController();
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   bool _verifyEmailInProgress = false;
@@ -41,7 +42,7 @@ class _ForgotPasswordVerifyEmailScreenState extends State<ForgotPasswordVerifyEm
                       'Your Email Address',
                       style: textTheme.titleLarge,
                     ),
-                    const SizedBox(height:4),
+                    const SizedBox(height: 4),
                     Text(
                       'A 6 digit verification pin will be sent to your email address',
                       style: textTheme.titleSmall,
@@ -85,10 +86,9 @@ class _ForgotPasswordVerifyEmailScreenState extends State<ForgotPasswordVerifyEm
     }
   }
 
-  Future<void> _verifyEmail() async {
+  void _verifyEmail() async {
     _verifyEmailInProgress = true;
     setState(() {});
-
 
     final NetworkResponse response = await NetworkCaller.getRequest(
         url: "${Urls.verifyEmailUrl}/${_emailTextController.text.trim()}");
@@ -96,7 +96,8 @@ class _ForgotPasswordVerifyEmailScreenState extends State<ForgotPasswordVerifyEm
     setState(() {});
 
     if (response.isSuccess) {
-      Navigator.pushNamed(context, ForgotPasswordVerifyOtpScreen.name);
+      Navigator.pushNamed(context, ForgotPasswordVerifyOtpScreen.name,
+          arguments: _emailTextController.text.trim());
     } else {
       showSnackBarMessage(context, response.errorMessage);
     }
