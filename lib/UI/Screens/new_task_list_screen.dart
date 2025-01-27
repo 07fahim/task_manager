@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:task_manager/Data/models/task_count_by_status_model.dart';
+import 'package:task_manager/Data/models/task_list_by_status_model.dart';
 import 'package:task_manager/UI/Screens/add_new_task_screen.dart';
 import 'package:task_manager/UI/Utills/app_colors.dart';
 import 'package:task_manager/UI/Widgets/circular_progress_indicator.dart';
@@ -24,11 +25,13 @@ class _NewTaskListScreenState extends State<NewTaskListScreen> {
   bool _getTaskCountByStatusInProgress = false;
   bool _getNewTaskListInProgress = false;
   TaskCountByStatusModel? taskCountByStatusModel;
+  TaskListByStatusModel? newTaskListModel;
 
   @override
   void initState() {
     super.initState();
     _getTaskCountByStatus();
+    _getNewTaskList();
   }
 
   @override
@@ -42,7 +45,10 @@ class _NewTaskListScreenState extends State<NewTaskListScreen> {
               _buildTasksSummaryByStatus(),
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 16),
-                child: _buildTasksListView(),
+                child: Visibility(
+                    visible: _getNewTaskListInProgress==false,
+                    replacement: const CenteredCircularProgressIndicator(),
+                    child: _buildTasksListView()),
               )
             ],
           ),
@@ -64,9 +70,9 @@ class _NewTaskListScreenState extends State<NewTaskListScreen> {
     return ListView.builder(
         primary: false,
         shrinkWrap: true,
-        itemCount: 10,
+        itemCount: newTaskListModel?.taskList?.length ?? 0,
         itemBuilder: (context, index) {
-          return const TaskItemsWidget();
+          return  TaskItemsWidget(taskModel: newTaskListModel!.taskList![index],);
         });
   }
 
@@ -121,12 +127,12 @@ class _NewTaskListScreenState extends State<NewTaskListScreen> {
     await NetworkCaller.getRequest(url: Urls.taskListByStatusUrl('New'));
 
     if (response.isSuccess) {
-      taskCountByStatusModel =
-          TaskCountByStatusModel.fromJson(response.responseData!);
+      newTaskListModel =
+          TaskListByStatusModel.fromJson(response.responseData!);
     } else {
       showSnackBarMessage(context, response.errorMessage);
     }
-    _getTaskCountByStatusInProgress = false;
+    _getNewTaskListInProgress = false;
     setState(() {});
   }
 }
