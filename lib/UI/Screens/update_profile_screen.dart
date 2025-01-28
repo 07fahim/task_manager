@@ -1,10 +1,10 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:task_manager/Data/models/user_model.dart';
 import 'package:task_manager/UI/Widgets/screen_background.dart';
 import 'package:task_manager/UI/Widgets/show_snackbar_message.dart';
 import '../../Data/models/task_list_by_status_model.dart';
-import '../../Data/models/user_model.dart';
 import '../../Data/services/network_caller.dart';
 import '../../Data/utils/urls.dart';
 import '../Widgets/tm_app_bar.dart';
@@ -30,18 +30,19 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
 
   XFile? _imagePicker;
   TaskListByStatusModel? taskListModel;
-  UserModel? userData;
+  UserModel? userModel;
 
   GlobalKey<FormState> formKey = GlobalKey<FormState>();
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
-    emailTEController.text = AuthController.userModel?.email ?? 'empty';
-    firstNameTEController.text = AuthController.userModel?.firstName ?? 'empty';
-    lastNameTEController.text = AuthController.userModel?.lastName ?? 'empty';
-    mobileTEController.text = AuthController.userModel?.mobile ?? 'empty';
+    if (AuthController.userModel != null) {
+      emailTEController.text = AuthController.userModel!.email ?? '';
+      firstNameTEController.text = AuthController.userModel!.firstName ?? '';
+      lastNameTEController.text = AuthController.userModel!.lastName ?? '';
+      mobileTEController.text = AuthController.userModel!.mobile ?? '';
+    }
   }
 
   @override
@@ -218,6 +219,10 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
   }
 
   Future<void> _UpdateProfile() async {
+    if (!formKey.currentState!.validate()) {
+      return;
+    }
+
     _isLoadingDataProgress = true;
     setState(() {});
 
@@ -227,58 +232,43 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
       "mobile": mobileTEController.text.trim(),
     };
 
-    // Add image data if selected
     if (_imagePicker != null) {
       List<int> imageBytes = await _imagePicker!.readAsBytes();
       requestBody["photo"] = base64Encode(imageBytes);
     }
 
-    // Add password if provided
     if (passwordTEController.text.isNotEmpty) {
       requestBody["password"] = passwordTEController.text;
     }
 
-    // Send the profile update request
     final NetworkResponse networkResponse = await NetworkCaller.postRequest(
       url: Urls.updateProfileUrl,
       body: requestBody,
     );
-    print("Request Body: $requestBody");
 
     _isLoadingDataProgress = false;
     setState(() {});
 
-    if (networkResponse.isSuccess && networkResponse.responseData!.isNotEmpty) {
-      try {
-        final Map<String, dynamic> responseData = networkResponse.responseData?['data'] ?? {};
+    if (networkResponse.isSuccess) {
+      Map<String, dynamic> userData = {
+        "email": AuthController.userModel?.email,
+        "firstName": requestBody["firstName"],
+        "lastName": requestBody["lastName"],
+        "mobile": requestBody["mobile"],
+        "photo": requestBody["photo"] ?? AuthController.userModel?.photo,
+      };
 
-        if (responseData.isNotEmpty) {
-          UserModel updatedUserData = UserModel.fromJson({
-            "email": AuthController.userModel?.email,
-            "firstName": responseData['firstName'] ?? AuthController.userModel?.firstName,
-            "lastName": responseData['lastName'] ?? AuthController.userModel?.lastName,
-            "mobile": responseData['mobile'] ?? AuthController.userModel?.mobile,
-            "photo": responseData['photo'] ?? AuthController.userModel?.photo,
-          });
+      UserModel updatedUserData = UserModel.fromJson(userData);
+      await AuthController.updateUserData(updatedUserData);
 
-          await AuthController.saveUserData(AuthController.accessToken!, updatedUserData);
-
-          showSnackBarMessage(context, 'Profile updated successfully');
-
-          print('Updated User Data:');
-          print('Email: ${AuthController.userModel?.email}');
-          print('First Name: ${AuthController.userModel?.firstName}');
-          print('Last Name: ${AuthController.userModel?.lastName}');
-          print('Mobile: ${AuthController.userModel?.mobile}');
-          print('Photo: ${AuthController.userModel?.photo}');
-        } else {
-          showSnackBarMessage( context,'No data returned from server.');
-        }
-      } catch (e) {
-        showSnackBarMessage( context,'Unexpected response from server.');
+      if (mounted) {
+        Navigator.pop(context, true);
+        showSnackBarMessage(context, 'Profile updated successfully');
       }
     } else {
-      showSnackBarMessage( context,'Failed to update profile. Please try again.',);
+      if (mounted) {
+        showSnackBarMessage(context, 'Failed to update profile. Please try again.');
+      }
     }
   }
 

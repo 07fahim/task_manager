@@ -1,14 +1,19 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
-import 'package:task_manager/UI/Screens/sign_in_screen.dart';
-import 'package:task_manager/UI/controller/auth_controller.dart';
-
-import '../Screens/update_profile_screen.dart';
+import 'package:task_manager/UI/Screens/update_profile_screen.dart';
+import 'package:task_manager/UI/Widgets/show_custom_alert_dialog_function.dart';
+import '../Screens/sign_in_screen.dart';
 import '../Utills/app_colors.dart';
+import '../controller/auth_controller.dart';
+
 
 class TaskManagerAppBar extends StatefulWidget implements PreferredSizeWidget {
-  const TaskManagerAppBar({super.key, this.fromUpdateProfile = false, required this.textTheme});
+  const TaskManagerAppBar({
+    super.key,
+    required this.textTheme,
+    this.fromUpdateProfile = false,
+  });
 
   final bool fromUpdateProfile;
   final TextTheme textTheme;
@@ -39,56 +44,111 @@ class _TaskManagerAppBarState extends State<TaskManagerAppBar> {
       _isLoading = false;
     });
   }
+
   @override
   Widget build(BuildContext context) {
-    final textTheme = Theme.of(context).textTheme;
     return AppBar(
       backgroundColor: AppColor.themeColor,
       title: Row(
         children: [
-          CircleAvatar(
-            radius: 16,
-            backgroundImage: MemoryImage(
-              base64Decode(AuthController.userModel?.photo ?? ''),
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: CircleAvatar(
+              backgroundImage: _getValidImage(AuthController.userModel?.photo),
+              child: (AuthController.userModel?.photo == null ||
+                  AuthController.userModel!.photo!.isEmpty)
+                  ? const Icon(Icons.person_outline)
+                  : null,
             ),
-            onBackgroundImageError: (_, __) => const Icon(Icons.person_outline),
-          ),
-          const SizedBox(
-            width: 8,
           ),
           Expanded(
             child: GestureDetector(
-              onTap: () {
+              onTap: () async {
                 if (!widget.fromUpdateProfile) {
-                  Navigator.pushNamed(context, UpdateProfileScreen.name);
+                  final result = await Navigator.pushNamed(context, UpdateProfileScreen.name);
+                  if (result == true) {
+                    await _refreshUserData();
+                  }
                 }
               },
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.start,
                 children: [
                   Text(
-                      AuthController.userModel?.fullName ?? '',
-                      style:
-                      textTheme.titleSmall!.copyWith(color: Colors.white)),
+                    AuthController.userModel?.fullName ?? 'Unknown User',
+                    style: widget.textTheme.titleLarge?.copyWith(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                    ),
+                  ),
                   Text(
-                    AuthController.userModel?.email ?? '',
-                    style: textTheme.bodyLarge!.copyWith(color: Colors.white),
-                  )
+                    AuthController.userModel?.email ?? 'Unknown Email',
+                    style: widget.textTheme.titleSmall?.copyWith(
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                    ),
+                  ),
                 ],
               ),
             ),
           ),
-          IconButton(
-              onPressed: () async {
-                await AuthController.clearUserData();
-                Navigator.pushNamedAndRemoveUntil(
-                    context, SignInScreen.name, (predicate) => false);
+          if (_isLoading)
+            const Padding(
+              padding: EdgeInsets.only(right: 16.0),
+              child: SizedBox(
+                width: 24,
+                height: 24,
+                child: CircularProgressIndicator(
+                  color: Colors.white,
+                  strokeWidth: 2,
+                ),
+              ),
+            )
+          else
+            IconButton(
+              onPressed: () {
+                ShowCustomAlertDialog(
+                  context,
+                  text: const Text(
+                    'Logout!',
+                    style: TextStyle(fontSize: 20),
+                  ),
+                  message: 'Are you sure you want to logout?',
+                  onConfirm: () async {
+                    await AuthController.clearUserData();
+                    Navigator.pushNamedAndRemoveUntil(
+                      context,
+                      SignInScreen.name,
+                          (route) => false,
+                    );
+                  },
+                );
               },
-              icon: const Icon(Icons.logout))
+              icon: const Icon(Icons.logout),
+            ),
         ],
       ),
     );
   }
 
+  /// validate and decode Base64 image
+  ImageProvider? _getValidImage(String? base64String) {
+    setState(() {});
+    try {
+      if (base64String != null && base64String.isNotEmpty) {
+        // Remove any "data:image/png;base64," prefix if present
+        final cleanedBase64 = base64String.startsWith("data:image")
+            ? base64String.split(",").last
+            : base64String;
 
+        // Decode and return MemoryImage if valid
+        return MemoryImage(base64Decode(cleanedBase64));
+      }
+    } catch (e) {
+      debugPrint('Error decoding base64 image: $e'); // Log the error for debugging
+    }
+    return null; // Return null if decoding fails
+  }
 }
