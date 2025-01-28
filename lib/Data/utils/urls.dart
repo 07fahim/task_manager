@@ -8,7 +8,14 @@ class Urls {
   static String taskListByStatusUrl(String status) =>
       '$_baseUrl/listTaskByStatus/$status';
 
-  static const String updateProfile = '$_baseUrl/profileUpdate';
-  static const String verifyEmailUrl = '$_baseUrl/RecoverVerifyEmail';
-  static const String verifyOTPUrl = '$_baseUrl/RecoverVerifyOTP';
+  static const String updateProfileUrl = '$_baseUrl/profileUpdate';
+  static String recoverVerifyEmailUrl(String email) =>
+      '$_baseUrl/RecoverVerifyEmail/$email';
+  static String recoverVerifyOTP(String email, otp) =>
+      '$_baseUrl/RecoverVerifyOTP/$email/$otp';
+  static String updateTaskStatusUrl(String id, status) =>
+      '$_baseUrl/updateTaskStatus/$id/$status';
+
+  static String deleteTaskUrl(String id) =>
+      '$_baseUrl/deleteTask/$id';
 }

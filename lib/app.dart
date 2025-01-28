@@ -7,8 +7,9 @@ import 'package:task_manager/UI/Screens/reset_password_screen.dart';
 import 'package:task_manager/UI/Screens/sign_in_screen.dart';
 import 'package:task_manager/UI/Screens/sign_up_screen.dart';
 import 'package:task_manager/UI/Screens/splash_screen.dart';
-import 'package:task_manager/UI/Screens/update_profile_screen.dart';
 import 'package:task_manager/UI/Utills/app_colors.dart';
+
+import 'UI/Screens/update_profile_screen.dart';
 
 class TaskManagerApp extends StatelessWidget {
   const TaskManagerApp({super.key});
@@ -61,15 +62,17 @@ class TaskManagerApp extends StatelessWidget {
           } else if (settings.name == ForgotPasswordVerifyEmailScreen.name) {
             widget = const ForgotPasswordVerifyEmailScreen();
           } else if (settings.name == ForgotPasswordVerifyOtpScreen.name) {
-            widget = const ForgotPasswordVerifyOtpScreen();
+            final String email = settings.arguments.toString();
+            widget = ForgotPasswordVerifyOtpScreen(email: email,);
           } else if (settings.name == ResetPasswordScreen.name) {
             widget = const ResetPasswordScreen();
           } else if (settings.name == MainBottomNavScreen.name) {
             widget = const MainBottomNavScreen();
           }else if (settings.name == AddNewTaskScreen.name) {
             widget = const AddNewTaskScreen();
-          } else if (settings.name==UpdateProfileScreen.name){
-            widget =const UpdateProfileScreen();
+          }
+           else if (settings.name == UpdateProfileScreen.name) {
+            widget = const UpdateProfileScreen();
           }
           return MaterialPageRoute(builder: (_) => widget);
         });

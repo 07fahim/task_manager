@@ -2,16 +2,43 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:task_manager/UI/Screens/sign_in_screen.dart';
-import 'package:task_manager/UI/Screens/update_profile_screen.dart';
 import 'package:task_manager/UI/controller/auth_controller.dart';
 
+import '../Screens/update_profile_screen.dart';
 import '../Utills/app_colors.dart';
 
-class TMAppBar extends StatelessWidget implements PreferredSizeWidget {
-  const TMAppBar({super.key, this.fromUpdateProfile = false});
+class TaskManagerAppBar extends StatefulWidget implements PreferredSizeWidget {
+  const TaskManagerAppBar({super.key, this.fromUpdateProfile = false, required this.textTheme});
 
   final bool fromUpdateProfile;
+  final TextTheme textTheme;
 
+  @override
+  State<TaskManagerAppBar> createState() => _TaskManagerAppBarState();
+
+  @override
+  Size get preferredSize => const Size.fromHeight(56);
+}
+
+class _TaskManagerAppBarState extends State<TaskManagerAppBar> {
+  bool _isLoading = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _refreshUserData();
+    setState(() {});
+  }
+
+  Future<void> _refreshUserData() async {
+    setState(() {
+      _isLoading = true; // Show loading
+    });
+    await AuthController.getUserData();
+    setState(() {
+      _isLoading = false;
+    });
+  }
   @override
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
@@ -32,7 +59,7 @@ class TMAppBar extends StatelessWidget implements PreferredSizeWidget {
           Expanded(
             child: GestureDetector(
               onTap: () {
-                if (!fromUpdateProfile) {
+                if (!widget.fromUpdateProfile) {
                   Navigator.pushNamed(context, UpdateProfileScreen.name);
                 }
               },
@@ -40,9 +67,9 @@ class TMAppBar extends StatelessWidget implements PreferredSizeWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                  AuthController.userModel?.fullName ?? '',
+                      AuthController.userModel?.fullName ?? '',
                       style:
-                          textTheme.titleSmall!.copyWith(color: Colors.white)),
+                      textTheme.titleSmall!.copyWith(color: Colors.white)),
                   Text(
                     AuthController.userModel?.email ?? '',
                     style: textTheme.bodyLarge!.copyWith(color: Colors.white),
@@ -63,6 +90,5 @@ class TMAppBar extends StatelessWidget implements PreferredSizeWidget {
     );
   }
 
-  @override
-  Size get preferredSize => const Size.fromHeight(56);
+
 }

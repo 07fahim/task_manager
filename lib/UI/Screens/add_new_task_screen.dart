@@ -27,7 +27,7 @@ class _AddNewTaskScreenState extends State<AddNewTaskScreen> {
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
     return Scaffold(
-      appBar: const TMAppBar(),
+      appBar: const TaskManagerAppBar(textTheme: TextTheme()),
       body: ScreenBackground(
         child: Padding(
           padding: const EdgeInsets.all(16),
