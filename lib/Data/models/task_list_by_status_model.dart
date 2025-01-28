@@ -1,4 +1,4 @@
-import 'package:task_manager/Data/models/task_mdel.dart';
+import 'package:task_manager/Data/models/task_model.dart';
 
 class TaskListByStatusModel {
   String? status;

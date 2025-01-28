@@ -20,14 +20,14 @@ class TaskManagerApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
         initialRoute: '/',
-        navigatorKey:navigatorKey ,
+        navigatorKey: navigatorKey,
         theme: ThemeData(
             colorSchemeSeed: AppColor.themeColor,
             textTheme: const TextTheme(
               titleLarge: TextStyle(fontSize: 34, fontWeight: FontWeight.w600),
               titleSmall: TextStyle(
                   color: Colors.grey,
-                  fontWeight: FontWeight.w400,
+                  fontWeight: FontWeight.bold,
                   fontSize: 16),
             ),
             inputDecorationTheme: const InputDecorationTheme(
@@ -63,15 +63,18 @@ class TaskManagerApp extends StatelessWidget {
             widget = const ForgotPasswordVerifyEmailScreen();
           } else if (settings.name == ForgotPasswordVerifyOtpScreen.name) {
             final String email = settings.arguments.toString();
-            widget = ForgotPasswordVerifyOtpScreen(email: email,);
+            widget = ForgotPasswordVerifyOtpScreen(email: email);
           } else if (settings.name == ResetPasswordScreen.name) {
-            widget = const ResetPasswordScreen();
+            final arguments = settings.arguments as Map<String, String>;
+            widget = ResetPasswordScreen(
+              email: arguments['email'] ?? '',
+              otp: arguments['otp'] ?? '',
+            );
           } else if (settings.name == MainBottomNavScreen.name) {
             widget = const MainBottomNavScreen();
-          }else if (settings.name == AddNewTaskScreen.name) {
+          } else if (settings.name == AddNewTaskScreen.name) {
             widget = const AddNewTaskScreen();
-          }
-           else if (settings.name == UpdateProfileScreen.name) {
+          } else if (settings.name == UpdateProfileScreen.name) {
             widget = const UpdateProfileScreen();
           }
           return MaterialPageRoute(builder: (_) => widget);
