@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:task_manager/UI/Screens/add_new_task_screen.dart';
 import 'package:task_manager/UI/Screens/forgot_passowrd_verify_email_screen.dart';
 import 'package:task_manager/UI/Screens/forgot_passowrd_verify_otp_screen.dart';
@@ -8,6 +9,7 @@ import 'package:task_manager/UI/Screens/sign_in_screen.dart';
 import 'package:task_manager/UI/Screens/sign_up_screen.dart';
 import 'package:task_manager/UI/Screens/splash_screen.dart';
 import 'package:task_manager/UI/Utills/app_colors.dart';
+import 'package:task_manager/controller_binder.dart';
 
 import 'UI/Screens/update_profile_screen.dart';
 
@@ -18,7 +20,8 @@ class TaskManagerApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return GetMaterialApp(
+      initialBinding: ControllerBinder(),
         initialRoute: '/',
         navigatorKey: navigatorKey,
         theme: ThemeData(
@@ -51,6 +54,7 @@ class TaskManagerApp extends StatelessWidget {
                   foregroundColor: Colors.white,
                   textStyle: const TextStyle(fontSize: 16)),
             )),
+
         onGenerateRoute: (RouteSettings settings) {
           late Widget widget;
           if (settings.name == SplashScreen.name) {
