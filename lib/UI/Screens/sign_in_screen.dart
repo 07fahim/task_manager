@@ -1,17 +1,17 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import 'package:task_manager/UI/Screens/forgot_passowrd_verify_email_screen.dart';
-import 'package:task_manager/UI/Screens/main_bottom_nav_screen.dart';
-import 'package:task_manager/UI/Screens/sign_up_screen.dart';
-import 'package:task_manager/UI/Widgets/circular_progress_indicator.dart';
-import 'package:task_manager/UI/Widgets/screen_background.dart';
+import 'package:get/get.dart';
 
-import '../../Data/models/user_model.dart';
-import '../../Data/services/network_caller.dart';
-import '../../Data/utils/urls.dart';
+import 'package:task_manager/ui/screens/main_bottom_nav_screen.dart';
+import 'package:task_manager/ui/screens/sign_up_screen.dart';
+import 'package:task_manager/ui/widgets/screen_background.dart';
+
+
 import '../Utills/app_colors.dart';
+import '../Widgets/circular_progress_indicator.dart';
 import '../Widgets/show_snackbar_message.dart';
-import '../controller/auth_controller.dart';
+import '../controller/sign_in_controller.dart';
+import 'forgot_passowrd_verify_email_screen.dart';
 
 class SignInScreen extends StatefulWidget {
   const SignInScreen({super.key});
@@ -23,158 +23,130 @@ class SignInScreen extends StatefulWidget {
 }
 
 class _SignInScreenState extends State<SignInScreen> {
-  final TextEditingController _emailTextController = TextEditingController();
-  final TextEditingController _passTextController = TextEditingController();
+  final TextEditingController _emailTEController = TextEditingController();
+  final TextEditingController _passwordTEController = TextEditingController();
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-  bool _signInProgress = false;
+  final SignInController _signInController = Get.find<SignInController>();
 
   @override
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
+
     return Scaffold(
       body: ScreenBackground(
-          child: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.all(24.0),
-          child: Form(
-            key: _formKey,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const SizedBox(height: 80),
-                Text(
-                  'Get Started With',
-                  style: textTheme.titleLarge,
-                ),
-                const SizedBox(height: 24),
-                TextFormField(
-                  controller: _emailTextController,
-                  keyboardType: TextInputType.emailAddress,
-                  decoration: const InputDecoration(hintText: "Email"),
-                  validator: (String? value) {
-                    if ((value?.trim().isEmpty ?? true)) {
-                      return 'Enter your email';
-                    }
-                    return null;
-                  },
-                ),
-                const SizedBox(height: 8),
-                TextFormField(
-                  controller: _passTextController,
-                  obscureText: true,
-                  decoration: const InputDecoration(
-                    hintText: "Password",
+        child: SingleChildScrollView(
+          child: Padding(
+            padding: const EdgeInsets.all(24),
+            child: Form(
+              key: _formKey,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const SizedBox(height: 80),
+                  Text('Get Started With', style: textTheme.titleLarge),
+                  const SizedBox(height: 24),
+                  TextFormField(
+                    controller: _emailTEController,
+                    keyboardType: TextInputType.emailAddress,
+                    decoration: const InputDecoration(hintText: 'Email'),
+                    validator: (String? value) {
+                      if (value?.trim().isEmpty ?? true) {
+                        return 'Enter a valid email address';
+                      }
+                      return null;
+                    },
                   ),
-                  validator: (String? value) {
-                    if ((value?.trim().isEmpty ?? true)) {
-                      return 'Enter your password';
-                    }
-                    if (value!.length < 6) {
-                      return "Enter a password more than 6 letters";
-                    }
-                    return null;
-                  },
-                ),
-                const SizedBox(height: 24),
-                Visibility(
-                  visible: _signInProgress==false,
-                  replacement: const CenteredCircularProgressIndicator(),
-                  child: ElevatedButton(
-                      onPressed: _onTapSignINButton,
-                      child: const Icon(
-                        Icons.arrow_circle_right,
-                        size: 30,
-                      )),
-                ),
-                const SizedBox(height: 48),
-                Center(
-                  child: Column(
-                    children: [
-                      TextButton(
+                  const SizedBox(height: 8),
+                  TextFormField(
+                    controller: _passwordTEController,
+                    obscureText: true,
+                    decoration: const InputDecoration(hintText: 'Password'),
+                    validator: (String? value) {
+                      if (value?.trim().isEmpty ?? true) {
+                        return 'Enter your valid password';
+                      }
+                      return null;
+                    },
+                  ),
+                  const SizedBox(height: 24),
+                  GetBuilder<SignInController>(builder: (controller) {
+                    return Visibility(
+                      visible: controller.inProgress == false,
+                      replacement: const CenteredCircularProgressIndicator(),
+                      child: ElevatedButton(
+                        onPressed: _onTapSignInButton,
+                        child: const Icon(Icons.arrow_circle_right_outlined),
+                      ),
+                    );
+                  }),
+                  const SizedBox(height: 48),
+                  Center(
+                    child: Column(
+                      children: [
+                        TextButton(
                           onPressed: () {
                             Navigator.pushNamed(
                                 context, ForgotPasswordVerifyEmailScreen.name);
                           },
-                          child: const Text(
-                            "Forgot Password?",
-                            style: TextStyle(color: Colors.black54),
-                          )),
-                      _buildSignUpSection(),
-                    ],
-                  ),
-                ),
-              ],
+                          child: const Text('Forgot Password?'),
+                        ),
+                        _buildSignUpSection(),
+                      ],
+                    ),
+                  )
+                ],
+              ),
             ),
           ),
         ),
-      )),
+      ),
     );
   }
 
-  void _onTapSignINButton() {
+  void _onTapSignInButton() {
     if (_formKey.currentState!.validate()) {
       _signIn();
     }
   }
 
   Future<void> _signIn() async {
-    _signInProgress = true;
-    setState(() {});
-
-    Map<String, dynamic> requestBody = {
-      "email": _emailTextController.text.trim(),
-      "password": _passTextController.text,
-    };
-
-    final NetworkResponse response = await NetworkCaller.postRequest(
-        url: Urls.logInUrl, body: requestBody);
-
-    if(response.isSuccess) {
-      debugPrint('Response Data: ${response.responseData}');
-      String token = response.responseData!['token'];
-      UserModel userModel = UserModel.fromJson(response.responseData!['data']);
-      await AuthController.saveUserData(token, userModel);
+    final bool isSuccess = await _signInController.signIn(
+      _emailTEController.text.trim(),
+      _passwordTEController.text,
+    );
+    if (isSuccess) {
       Navigator.pushReplacementNamed(context, MainBottomNavScreen.name);
     } else {
-    _signInProgress = false;
-    setState(() {});
-    if (response.statusCode == 401) {
-    showSnackBarMessage(context, 'Email/Password is invalid! Try again.');
-    } else {
-    showSnackBarMessage(context, response.errorMessage);
+      showSnackBarMessage(context, _signInController.errorMessage!);
     }
-    }
-  }
-
-  void _clearTextField() {
-    _passTextController.clear();
-    _emailTextController.clear();
   }
 
   Widget _buildSignUpSection() {
     return RichText(
       text: TextSpan(
-          text: "Don't have an account? ",
-          style: const TextStyle(
-              color: Colors.black38, fontWeight: FontWeight.w400),
-          children: [
-            TextSpan(
-              text: "Sign up",
-              style: const TextStyle(
-                  color: AppColor.themeColor, fontWeight: FontWeight.bold),
-              recognizer: TapGestureRecognizer()
-                ..onTap = () {
-                  Navigator.pushNamed(context, SignUpScreen.name);
-                },
-            )
-          ]),
+        text: "Don't have an account? ",
+        style:
+        const TextStyle(color: Colors.black54, fontWeight: FontWeight.w600),
+        children: [
+          TextSpan(
+            text: 'Sign up',
+            style: const TextStyle(
+              color: AppColor.themeColor,
+            ),
+            recognizer: TapGestureRecognizer()
+              ..onTap = () {
+                Navigator.pushNamed(context, SignUpScreen.name);
+              },
+          )
+        ],
+      ),
     );
   }
 
   @override
   void dispose() {
-    _emailTextController.dispose();
-    _passTextController.dispose();
+    _emailTEController.dispose();
+    _passwordTEController.dispose();
     super.dispose();
   }
 }
