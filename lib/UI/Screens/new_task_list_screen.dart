@@ -19,7 +19,6 @@ class NewTaskListScreen extends StatefulWidget {
 }
 
 class _NewTaskListScreenState extends State<NewTaskListScreen> {
-  // State management variables
   bool _isLoadingData = false;
   TaskCountByStatusModel? taskCountByStatusModel;
   TaskListByStatusModel? taskListModel;
@@ -27,7 +26,6 @@ class _NewTaskListScreenState extends State<NewTaskListScreen> {
   @override
   void initState() {
     super.initState();
-    // Load data when screen initializes
     _loadAllData();
   }
 
@@ -74,7 +72,6 @@ class _NewTaskListScreenState extends State<NewTaskListScreen> {
     );
   }
 
-  // Main content layout with loading state handling
   Widget _buildMainContent() {
     if (_isLoadingData) {
       return const Center(child: CircularProgressIndicator());
@@ -94,7 +91,7 @@ class _NewTaskListScreenState extends State<NewTaskListScreen> {
     );
   }
 
-  // Task summary section showing counts for each status
+
   Widget _buildTasksSummaryByStatus() {
     return SingleChildScrollView(
       scrollDirection: Axis.horizontal,
@@ -113,7 +110,6 @@ class _NewTaskListScreenState extends State<NewTaskListScreen> {
     );
   }
 
-  // Main task list view showing all new tasks
   Widget _buildTaskListView() {
     if (taskListModel?.taskList?.isEmpty ?? true) {
       return const Center(
@@ -145,7 +141,6 @@ class _NewTaskListScreenState extends State<NewTaskListScreen> {
     );
   }
 
-  // Navigate to add task screen and refresh on return if needed
   Future<void> _navigateToAddTask() async {
     final result = await Navigator.pushNamed(
       context,
@@ -156,7 +151,6 @@ class _NewTaskListScreenState extends State<NewTaskListScreen> {
     }
   }
 
-  // Fetch task count summary from the API
   Future<void> _getTaskCountByStatus() async {
     final response = await NetworkCaller.getRequest(
       url: Urls.taskCountByStatusUrl,
@@ -177,7 +171,6 @@ class _NewTaskListScreenState extends State<NewTaskListScreen> {
     }
   }
 
-  // Fetch list of new tasks from the API
   Future<void> _getNewTaskList() async {
     final response = await NetworkCaller.getRequest(
       url: Urls.taskListByStatusUrl('New'),

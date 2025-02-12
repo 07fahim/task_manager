@@ -100,9 +100,7 @@ class _ForgotPasswordVerifyOtpScreenState extends State<ForgotPasswordVerifyOtpS
     );
   }
 
-  /// Sends the OTP entered by the user to the server for validation.
   Future<void> _getPinVerify() async {
-    // API Call
     NetworkResponse networkResponse = await NetworkCaller.getRequest(
         url: Urls.recoverVerifyOTP(widget.email, otpTEController.text));
 
