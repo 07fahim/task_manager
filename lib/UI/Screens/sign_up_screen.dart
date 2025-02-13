@@ -1,16 +1,14 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import 'package:task_manager/Data/services/network_caller.dart';
-import 'package:task_manager/Data/utils/urls.dart';
+import 'package:get/get.dart';
 import 'package:task_manager/UI/Widgets/circular_progress_indicator.dart';
 import 'package:task_manager/UI/Widgets/screen_background.dart';
 import 'package:task_manager/UI/Widgets/show_snackbar_message.dart';
-
+import 'package:task_manager/UI/controller/sign_up_controller.dart';
 import '../Utills/app_colors.dart';
 
 class SignUpScreen extends StatefulWidget {
   const SignUpScreen({super.key});
-
   static const String name = '/sign-up';
 
   @override
@@ -19,121 +17,110 @@ class SignUpScreen extends StatefulWidget {
 
 class _SignUpScreenState extends State<SignUpScreen> {
   final TextEditingController _emailTextController = TextEditingController();
-  final TextEditingController _firstNameTextController =
-      TextEditingController();
+  final TextEditingController _firstNameTextController = TextEditingController();
   final TextEditingController _lastNameTextController = TextEditingController();
   final TextEditingController _mobileTextController = TextEditingController();
   final TextEditingController _passTextController = TextEditingController();
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-  bool _signUpInProgress = false;
+  final SignUpController _signUpController = Get.find<SignUpController>();
 
   @override
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
     return Scaffold(
       body: ScreenBackground(
-          child: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.all(24.0),
-          child: Form(
-            key: _formKey,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const SizedBox(height: 80),
-                Text(
-                  'Join With Us',
-                  style: textTheme.titleLarge,
-                ),
-                const SizedBox(height: 24),
-                TextFormField(
-                  controller: _emailTextController,
-                  keyboardType: TextInputType.emailAddress,
-                  decoration: const InputDecoration(hintText: "Email"),
-                  validator: (String? value) {
-                    if ((value?.trim().isEmpty ?? true)) {
-                      return 'Enter your email';
-                    }
-                    return null;
-                  },
-                ),
-                const SizedBox(height: 8),
-                TextFormField(
-                  controller: _firstNameTextController,
-                  decoration: const InputDecoration(
-                    hintText: "First Name",
+        child: SingleChildScrollView(
+          child: Padding(
+            padding: const EdgeInsets.all(24.0),
+            child: Form(
+              key: _formKey,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const SizedBox(height: 80),
+                  Text('Join With Us', style: textTheme.titleLarge),
+                  const SizedBox(height: 24),
+                  TextFormField(
+                    controller: _emailTextController,
+                    keyboardType: TextInputType.emailAddress,
+                    decoration: const InputDecoration(hintText: "Email"),
+                    validator: (String? value) {
+                      if (value?.trim().isEmpty ?? true) {
+                        return 'Enter your email';
+                      }
+                      return null;
+                    },
                   ),
-                  validator: (String? value) {
-                    if ((value?.trim().isEmpty ?? true)) {
-                      return 'Enter your first name';
-                    }
-                    return null;
-                  },
-                ),
-                const SizedBox(height: 8),
-                TextFormField(
-                  controller: _lastNameTextController,
-                  decoration: const InputDecoration(
-                    hintText: "Last Name",
+                  const SizedBox(height: 8),
+                  TextFormField(
+                    controller: _firstNameTextController,
+                    decoration: const InputDecoration(hintText: "First Name"),
+                    validator: (String? value) {
+                      if (value?.trim().isEmpty ?? true) {
+                        return 'Enter your first name';
+                      }
+                      return null;
+                    },
                   ),
-                  validator: (String? value) {
-                    if ((value?.trim().isEmpty ?? true)) {
-                      return 'Enter your last name';
-                    }
-                    return null;
-                  },
-                ),
-                const SizedBox(height: 8),
-                TextFormField(
-                  keyboardType: TextInputType.number,
-                  controller: _mobileTextController,
-                  decoration: const InputDecoration(
-                    hintText: "Mobile",
+                  const SizedBox(height: 8),
+                  TextFormField(
+                    controller: _lastNameTextController,
+                    decoration: const InputDecoration(hintText: "Last Name"),
+                    validator: (String? value) {
+                      if (value?.trim().isEmpty ?? true) {
+                        return 'Enter your last name';
+                      }
+                      return null;
+                    },
                   ),
-                  validator: (String? value) {
-                    if ((value?.trim().isEmpty ?? true)) {
-                      return 'Enter your mobile number';
-                    }
-                    return null;
-                  },
-                ),
-                const SizedBox(height: 8),
-                TextFormField(
-                  controller: _passTextController,
-                  obscureText: true,
-                  decoration: const InputDecoration(
-                    hintText: "Password",
+                  const SizedBox(height: 8),
+                  TextFormField(
+                    controller: _mobileTextController,
+                    keyboardType: TextInputType.number,
+                    decoration: const InputDecoration(hintText: "Mobile"),
+                    validator: (String? value) {
+                      if (value?.trim().isEmpty ?? true) {
+                        return 'Enter your mobile number';
+                      }
+                      return null;
+                    },
                   ),
-                  validator: (String? value) {
-                    if ((value?.trim().isEmpty ?? true)) {
-                      return 'Enter your password';
-                    }
-                    if(value!.length<6){
-                      return "Enter a password more than 6 letters";
-                    }
-                    return null;
-                  },
-                ),
-                const SizedBox(height: 24),
-                Visibility(
-                  visible: _signUpInProgress == false,
-                  replacement: const CenteredCircularProgressIndicator(),
-                  child: ElevatedButton(
-                      onPressed: _onTapSignUpButton,
-                      child: const Icon(
-                        Icons.arrow_circle_right,
-                        size: 30,
-                      )),
-                ),
-                const SizedBox(height: 48),
-                Center(
-                  child: _buildSignInSection(),
-                ),
-              ],
+                  const SizedBox(height: 8),
+                  TextFormField(
+                    controller: _passTextController,
+                    obscureText: true,
+                    decoration: const InputDecoration(hintText: "Password"),
+                    validator: (String? value) {
+                      if (value?.trim().isEmpty ?? true) {
+                        return 'Enter your password';
+                      }
+                      if (value!.length < 6) {
+                        return 'Enter a password more than 6 letters';
+                      }
+                      return null;
+                    },
+                  ),
+                  const SizedBox(height: 24),
+                  GetBuilder<SignUpController>(
+                      builder: (controller) {
+                        return Visibility(
+                          visible: !controller.signUpInProgress,
+                          replacement: const CenteredCircularProgressIndicator(),
+                          child: ElevatedButton(
+                            onPressed: _onTapSignUpButton,
+                            child: const Icon(Icons.arrow_circle_right, size: 30),
+                          ),
+                        );
+                      }
+                  ),
+                  const SizedBox(height: 48),
+                  Center(child: _buildSignInSection()),
+                ],
+              ),
             ),
           ),
         ),
-      )),
+      ),
     );
   }
 
@@ -144,9 +131,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
   }
 
   Future<void> _registerUser() async {
-    _signUpInProgress = true;
-    setState(() {});
-
     Map<String, dynamic> requestBody = {
       "email": _emailTextController.text.trim(),
       "firstName": _firstNameTextController.text.trim(),
@@ -156,16 +140,17 @@ class _SignUpScreenState extends State<SignUpScreen> {
       "photo": "",
     };
 
-    final NetworkResponse response = await NetworkCaller.postRequest(
-        url: Urls.registrationUrl, body: requestBody);
-    _signUpInProgress = false;
-    setState(() {});
+    final bool isSuccess = await _signUpController.registerUser(requestBody);
 
-    if (response.isSuccess) {
+    if (isSuccess) {
       _clearTextField();
-      showSnackBarMessage(context, "New user registration successful");
+      if (mounted) {
+        showSnackBarMessage(context, "New user registration successful");
+      }
     } else {
-      showSnackBarMessage(context, response.errorMessage);
+      if (mounted) {
+        showSnackBarMessage(context, _signUpController.errorMessage ?? "Registration failed");
+      }
     }
   }
 
@@ -182,18 +167,23 @@ class _SignUpScreenState extends State<SignUpScreen> {
       text: TextSpan(
           text: "Already have an account? ",
           style: const TextStyle(
-              color: Colors.black38, fontWeight: FontWeight.w400),
+              color: Colors.black38,
+              fontWeight: FontWeight.w400
+          ),
           children: [
             TextSpan(
               text: "Sign in",
               style: const TextStyle(
-                  color: AppColor.themeColor, fontWeight: FontWeight.bold),
+                  color: AppColor.themeColor,
+                  fontWeight: FontWeight.bold
+              ),
               recognizer: TapGestureRecognizer()
                 ..onTap = () {
                   Navigator.pop(context);
                 },
             )
-          ]),
+          ]
+      ),
     );
   }
 
