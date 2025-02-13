@@ -7,7 +7,6 @@ import '../Screens/sign_in_screen.dart';
 import '../Utills/app_colors.dart';
 import '../controller/auth_controller.dart';
 
-
 class TaskManagerAppBar extends StatefulWidget implements PreferredSizeWidget {
   const TaskManagerAppBar({
     super.key,
@@ -32,14 +31,13 @@ class _TaskManagerAppBarState extends State<TaskManagerAppBar> {
   void initState() {
     super.initState();
     _refreshUserData();
-    setState(() {});
   }
 
   Future<void> _refreshUserData() async {
     setState(() {
       _isLoading = true; // Show loading
     });
-    await AuthController.getUserData();
+    await AuthController.instance.getUserData(); // Corrected to instance
     setState(() {
       _isLoading = false;
     });
@@ -54,9 +52,9 @@ class _TaskManagerAppBarState extends State<TaskManagerAppBar> {
           Padding(
             padding: const EdgeInsets.all(8.0),
             child: CircleAvatar(
-              backgroundImage: _getValidImage(AuthController.userModel?.photo),
-              child: (AuthController.userModel?.photo == null ||
-                  AuthController.userModel!.photo!.isEmpty)
+              backgroundImage: _getValidImage(AuthController.instance.userModel?.photo), // Corrected to instance
+              child: (AuthController.instance.userModel?.photo == null ||
+                  AuthController.instance.userModel!.photo!.isEmpty)
                   ? const Icon(Icons.person_outline)
                   : null,
             ),
@@ -76,7 +74,7 @@ class _TaskManagerAppBarState extends State<TaskManagerAppBar> {
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: [
                   Text(
-                    AuthController.userModel?.fullName ?? 'Unknown User',
+                    AuthController.instance.userModel?.fullName ?? 'Unknown User', // Corrected to instance
                     style: widget.textTheme.titleLarge?.copyWith(
                       fontSize: 20,
                       fontWeight: FontWeight.bold,
@@ -84,7 +82,7 @@ class _TaskManagerAppBarState extends State<TaskManagerAppBar> {
                     ),
                   ),
                   Text(
-                    AuthController.userModel?.email ?? 'Unknown Email',
+                    AuthController.instance.userModel?.email ?? 'Unknown Email', // Corrected to instance
                     style: widget.textTheme.titleSmall?.copyWith(
                       fontWeight: FontWeight.bold,
                       color: Colors.white,
@@ -117,7 +115,7 @@ class _TaskManagerAppBarState extends State<TaskManagerAppBar> {
                   ),
                   message: 'Are you sure you want to logout?',
                   onConfirm: () async {
-                    await AuthController.clearUserData();
+                    await AuthController.instance.clearUserData(); // Corrected to instance
                     Navigator.pushNamedAndRemoveUntil(
                       context,
                       SignInScreen.name,
