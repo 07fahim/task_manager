@@ -1,6 +1,6 @@
 import 'package:get/get.dart';
 import 'package:task_manager/UI/controller/auth_controller.dart';
-import 'package:task_manager/Data/models/user_model.dart';
+import 'package:task_manager/data/models/user_model.dart';
 import 'package:task_manager/data/services/network_caller.dart';
 import 'package:task_manager/data/utils/urls.dart';
 
@@ -26,7 +26,7 @@ class SignInController extends GetxController {
     if (response.isSuccess) {
       String token = response.responseData!['token'];
       UserModel userModel = UserModel.fromJson(response.responseData!['data']);
-      await AuthController.saveUserData(token, userModel);
+      await AuthController.instance.saveUserData(token, userModel);
       isSuccess = true;
       _errorMessage = null;
     } else {
