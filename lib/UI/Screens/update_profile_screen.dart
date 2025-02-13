@@ -1,9 +1,10 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:task_manager/Data/models/user_model.dart';
+
+import 'package:task_manager/data/models/user_model.dart';
+
 import 'package:task_manager/UI/Widgets/screen_background.dart';
-import 'package:task_manager/UI/Widgets/show_snackbar_message.dart';
 import '../../Data/models/task_list_by_status_model.dart';
 import '../../Data/services/network_caller.dart';
 import '../../Data/utils/urls.dart';
@@ -37,11 +38,11 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
   @override
   void initState() {
     super.initState();
-    if (AuthController.userModel != null) {
-      emailTEController.text = AuthController.userModel!.email ?? '';
-      firstNameTEController.text = AuthController.userModel!.firstName ?? '';
-      lastNameTEController.text = AuthController.userModel!.lastName ?? '';
-      mobileTEController.text = AuthController.userModel!.mobile ?? '';
+    if (AuthController.instance.userModel != null) {
+      emailTEController.text = AuthController.instance.userModel!.email ?? '';
+      firstNameTEController.text = AuthController.instance.userModel!.firstName ?? '';
+      lastNameTEController.text = AuthController.instance.userModel!.lastName ?? '';
+      mobileTEController.text = AuthController.instance.userModel!.mobile ?? '';
     }
   }
 
@@ -223,8 +224,9 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
       return;
     }
 
-    _isLoadingDataProgress = true;
-    setState(() {});
+    setState(() {
+      _isLoadingDataProgress = true;
+    });
 
     Map<String, dynamic> requestBody = {
       "firstName": firstNameTEController.text.trim(),
@@ -246,40 +248,29 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
       body: requestBody,
     );
 
-    _isLoadingDataProgress = false;
-    setState(() {});
+    setState(() {
+      _isLoadingDataProgress = false;
+    });
 
     if (networkResponse.isSuccess) {
       Map<String, dynamic> userData = {
-        "email": AuthController.userModel?.email,
+        "email": AuthController.instance.userModel?.email,
         "firstName": requestBody["firstName"],
         "lastName": requestBody["lastName"],
         "mobile": requestBody["mobile"],
-        "photo": requestBody["photo"] ?? AuthController.userModel?.photo,
+        "photo": requestBody["photo"] ?? AuthController.instance.userModel?.photo,
       };
 
       UserModel updatedUserData = UserModel.fromJson(userData);
-      await AuthController.updateUserData(updatedUserData);
+      await AuthController.instance.updateUserData(updatedUserData);
 
-      if (mounted) {
-        Navigator.pop(context, true);
-        showSnackBarMessage(context, 'Profile updated successfully');
-      }
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Profile updated successfully')),
+      );
     } else {
-      if (mounted) {
-        showSnackBarMessage(context, 'Failed to update profile. Please try again.');
-      }
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Profile update failed')),
+      );
     }
-  }
-
-  @override
-  void dispose() {
-    emailTEController.dispose();
-    passwordTEController.dispose();
-    firstNameTEController.dispose();
-    lastNameTEController.dispose();
-    mobileTEController.dispose();
-    imageTEController.dispose();
-    super.dispose();
   }
 }
