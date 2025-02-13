@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:task_manager/UI/Utills/app_colors.dart';
 import 'package:task_manager/UI/Widgets/show_custom_alert_dialog_function.dart';
 import 'package:task_manager/UI/Widgets/show_snackbar_message.dart';
-import '../../Data/models/task_list_by_status_model.dart';
 import '../../Data/models/task_model.dart';
 import '../../Data/services/network_caller.dart';
 import '../../Data/utils/urls.dart';
