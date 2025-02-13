@@ -1,37 +1,34 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:task_manager/UI/Screens/cancelled_task_list_screen.dart';
 import 'package:task_manager/UI/Screens/completed_task_list_screen.dart';
 import 'package:task_manager/UI/Screens/new_task_list_screen.dart';
 import 'package:task_manager/UI/Screens/progress_task_list_screen.dart';
+import 'package:task_manager/UI/controller/main_bottom_nav_controller.dart';
 
-class MainBottomNavScreen extends StatefulWidget {
+class MainBottomNavScreen extends StatelessWidget {
   static const String name = '/home';
 
-  const MainBottomNavScreen({super.key});
+  MainBottomNavScreen({super.key});
 
-  @override
-  State<MainBottomNavScreen> createState() => _MainBottomNavScreenState();
-}
-
-class _MainBottomNavScreenState extends State<MainBottomNavScreen> {
-  int _seletedIndex = 0;
-  final List<Widget> _screens = const [
+  final List<Widget> _screens = [
     NewTaskListScreen(),
     ProgressTaskListScreen(),
     CompletedTaskListScreen(),
     CancelledTaskListScreen(),
-
   ];
+
+  final MainBottomNavController controller = Get.find<MainBottomNavController>();
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: _screens[_seletedIndex],
-      bottomNavigationBar: NavigationBar(
-          selectedIndex: _seletedIndex,
+      body: Obx(() => _screens[controller.selectedIndex.value]),
+      bottomNavigationBar: Obx(
+            () => NavigationBar(
+          selectedIndex: controller.selectedIndex.value,
           onDestinationSelected: (int index) {
-            _seletedIndex = index;
-            setState(() {});
+            controller.changeIndex(index);
           },
           destinations: const [
             NavigationDestination(
@@ -40,7 +37,9 @@ class _MainBottomNavScreenState extends State<MainBottomNavScreen> {
             NavigationDestination(icon: Icon(Icons.done), label: "Completed"),
             NavigationDestination(
                 icon: Icon(Icons.cancel_outlined), label: "Cancelled")
-          ]),
+          ],
+        ),
+      ),
     );
   }
 }

@@ -1,34 +1,23 @@
-
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:task_manager/UI/Widgets/screen_background.dart';
 import 'package:task_manager/UI/Widgets/show_snackbar_message.dart';
-
-import '../../data/services/network_caller.dart';
-import '../../data/utils/urls.dart';
+import 'package:task_manager/UI/controller/add_new_task_controller.dart';
 import '../Widgets/tm_app_bar.dart';
 
-class AddNewTaskScreen extends StatefulWidget {
+class AddNewTaskScreen extends StatelessWidget {
   static String name = 'add/new/task/screen';
 
-  const AddNewTaskScreen({super.key});
+  AddNewTaskScreen({super.key});
 
-  @override
-  State<AddNewTaskScreen> createState() => _AddNewTaskScreenState();
-}
-
-class _AddNewTaskScreenState extends State<AddNewTaskScreen> {
-  final TextEditingController _titleTEController = TextEditingController();
-  final TextEditingController _descriptionTEController = TextEditingController();
-  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-  bool _newTaskAddedInProgress = false;
+  final AddNewTaskController controller = Get.find<AddNewTaskController>();
 
   @override
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
 
     return Scaffold(
-      appBar: TaskManagerAppBar(textTheme: textTheme),
+      appBar: TaskManagerAppBar(textTheme: textTheme, onImageChanged: () {  },),
       body: ScreenBackground(
         child: SingleChildScrollView(
           child: Padding(
@@ -44,7 +33,7 @@ class _AddNewTaskScreenState extends State<AddNewTaskScreen> {
                 ),
                 const SizedBox(height: 24),
                 Form(
-                  key: _formKey,
+                  key: controller.formKey,
                   child: Column(
                     children: [
                       TextFormField(
@@ -56,7 +45,7 @@ class _AddNewTaskScreenState extends State<AddNewTaskScreen> {
                           return null;
                         },
                         keyboardType: TextInputType.text,
-                        controller: _titleTEController,
+                        controller: controller.titleController,
                         decoration: const InputDecoration(hintText: 'Title'),
                       ),
                       const SizedBox(height: 12),
@@ -68,7 +57,7 @@ class _AddNewTaskScreenState extends State<AddNewTaskScreen> {
                           }
                           return null;
                         },
-                        controller: _descriptionTEController,
+                        controller: controller.descriptionController,
                         decoration: const InputDecoration(hintText: 'Description'),
                         maxLines: 6,
                       ),
@@ -76,63 +65,29 @@ class _AddNewTaskScreenState extends State<AddNewTaskScreen> {
                   ),
                 ),
                 const SizedBox(height: 12),
-                Visibility(
-                  visible: _newTaskAddedInProgress == false,
+                Obx(() => Visibility(
+                  visible: !controller.isLoading,
                   replacement: const Center(child: CircularProgressIndicator()),
                   child: ElevatedButton(
-                    onPressed: () {
-                      if (_formKey.currentState!.validate()) {
-                        _addNewTaskItem();
+                    onPressed: () async {
+                      if (controller.formKey.currentState!.validate()) {
+                        final bool success = await controller.addNewTask();
+                        if (success) {
+                          showSnackBarMessage(context, 'New Task Added');
+                          Navigator.pop(context, true);
+                        } else {
+                          showSnackBarMessage(context, 'Added failed');
+                        }
                       }
                     },
-                    child: const Icon(Icons.arrow_circle_right,
-                      size: 30,),
+                    child: const Icon(Icons.arrow_circle_right, size: 30),
                   ),
-                ),
+                )),
               ],
             ),
           ),
         ),
       ),
     );
-  }
-
-  Future<void> _addNewTaskItem() async {
-    _newTaskAddedInProgress = true;
-    setState(() {});
-
-    Map<String, dynamic> requestBody = {
-      "title": _titleTEController.text.trim(),
-      "description": _descriptionTEController.text.trim(),
-      "status": "New",
-    };
-
-    final NetworkResponse networkResponse = await NetworkCaller.postRequest(
-        url: Urls.createTaskUrl, body: requestBody);
-
-    _newTaskAddedInProgress = false;
-    setState(() {});
-
-    if (networkResponse.isSuccess) {
-      _clearData();
-      showSnackBarMessage( context,'New Task Added',);
-      Navigator.pop(context,true);
-    } else {
-      debugPrint(networkResponse.errorMessage);
-      debugPrint(networkResponse.statusCode.toString());
-      showSnackBarMessage( context,'Added field');
-    }
-  }
-
-  void _clearData() {
-    _titleTEController.clear();
-    _descriptionTEController.clear();
-  }
-
-  @override
-  void dispose() {
-    _titleTEController.dispose();
-    _descriptionTEController.dispose();
-    super.dispose();
   }
 }

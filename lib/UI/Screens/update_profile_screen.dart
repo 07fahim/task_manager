@@ -1,6 +1,6 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:image_picker/image_picker.dart';
+import 'package:get/get.dart';
 
 import 'package:task_manager/data/models/user_model.dart';
 
@@ -10,6 +10,7 @@ import '../../Data/services/network_caller.dart';
 import '../../Data/utils/urls.dart';
 import '../Widgets/tm_app_bar.dart';
 import '../controller/auth_controller.dart';
+import '../controller/image_controller.dart'; // Import ImageController
 
 class UpdateProfileScreen extends StatefulWidget {
   static String name = 'update/screen';
@@ -29,7 +30,7 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
   TextEditingController imageTEController = TextEditingController();
   bool _isLoadingDataProgress = false;
 
-  XFile? _imagePicker;
+  final ImageController imageController = Get.put(ImageController()); // Initialize the ImageController
   TaskListByStatusModel? taskListModel;
   UserModel? userModel;
 
@@ -52,7 +53,7 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
     return Scaffold(
       appBar: TaskManagerAppBar(
         textTheme: textTheme,
-        fromUpdateProfile: true,
+        fromUpdateProfile: true, onImageChanged: () {  },
       ),
       body: ScreenBackground(
         child: SingleChildScrollView(
@@ -163,7 +164,7 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
 
   Widget _buildPhotoWidget() {
     return GestureDetector(
-      onTap: _getImagePicker,
+      onTap: imageController.pickImage, // Use the controller's pickImage method
       child: Container(
         height: 50,
         decoration: BoxDecoration(
@@ -194,7 +195,9 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
             const SizedBox(width: 16),
             Expanded(
               child: Text(
-                _imagePicker == null ? 'No item selected' : _imagePicker!.name,
+                imageController.selectedImage == null
+                    ? 'No item selected'
+                    : imageController.selectedImage!.name,
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
                 style: const TextStyle(
@@ -208,15 +211,6 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
         ),
       ),
     );
-  }
-
-  Future<void> _getImagePicker() async {
-    final ImagePicker picker = ImagePicker();
-    XFile? image = await picker.pickImage(source: ImageSource.gallery);
-    if (image != null) {
-      _imagePicker = image;
-      setState(() {});
-    }
   }
 
   Future<void> _UpdateProfile() async {
@@ -234,8 +228,8 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
       "mobile": mobileTEController.text.trim(),
     };
 
-    if (_imagePicker != null) {
-      List<int> imageBytes = await _imagePicker!.readAsBytes();
+    if (imageController.selectedImage != null) {
+      List<int> imageBytes = await imageController.selectedImage!.readAsBytes();
       requestBody["photo"] = base64Encode(imageBytes);
     }
 

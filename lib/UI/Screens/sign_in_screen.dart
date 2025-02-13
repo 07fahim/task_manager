@@ -1,12 +1,10 @@
+// sign_in_screen.dart
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-
 import 'package:task_manager/ui/screens/main_bottom_nav_screen.dart';
 import 'package:task_manager/ui/screens/sign_up_screen.dart';
 import 'package:task_manager/ui/widgets/screen_background.dart';
-
-
 import '../Utills/app_colors.dart';
 import '../Widgets/circular_progress_indicator.dart';
 import '../Widgets/show_snackbar_message.dart';
@@ -115,9 +113,11 @@ class _SignInScreenState extends State<SignInScreen> {
       _passwordTEController.text,
     );
     if (isSuccess) {
-      Navigator.pushReplacementNamed(context, MainBottomNavScreen.name);
+      Get.offAllNamed(MainBottomNavScreen.name);
     } else {
-      showSnackBarMessage(context, _signInController.errorMessage!);
+      if (mounted) {
+        showSnackBarMessage(context, _signInController.errorMessage!);
+      }
     }
   }
 
@@ -125,8 +125,7 @@ class _SignInScreenState extends State<SignInScreen> {
     return RichText(
       text: TextSpan(
         text: "Don't have an account? ",
-        style:
-        const TextStyle(color: Colors.black54, fontWeight: FontWeight.w600),
+        style: const TextStyle(color: Colors.black54, fontWeight: FontWeight.w600),
         children: [
           TextSpan(
             text: 'Sign up',

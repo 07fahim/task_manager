@@ -75,9 +75,9 @@ class TaskManagerApp extends StatelessWidget {
               otp: arguments['otp'] ?? '',
             );
           } else if (settings.name == MainBottomNavScreen.name) {
-            widget = const MainBottomNavScreen();
+            widget = MainBottomNavScreen();
           } else if (settings.name == AddNewTaskScreen.name) {
-            widget = const AddNewTaskScreen();
+            widget = AddNewTaskScreen();
           } else if (settings.name == UpdateProfileScreen.name) {
             widget = const UpdateProfileScreen();
           }

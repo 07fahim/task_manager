@@ -1,73 +1,42 @@
 import 'package:flutter/material.dart';
-import 'package:task_manager/UI/Utills/app_colors.dart';
+import 'package:get/get.dart';
 import 'package:task_manager/UI/Widgets/screen_background.dart';
-import 'package:task_manager/UI/Widgets/show_snackbar_message.dart';
-import '../../../data/models/task_list_by_status_model.dart';
-import '../../Data/services/network_caller.dart';
-import '../../Data/utils/urls.dart';
+import 'package:task_manager/UI/controller/get_task_list_controller.dart';
 import '../Widgets/task_items_widget.dart';
 import '../Widgets/tm_app_bar.dart';
-import 'add_new_task_screen.dart';
 
-class CancelledTaskListScreen extends StatefulWidget {
+class CancelledTaskListScreen extends StatelessWidget {
   static String name = 'canceled-task-screen';
-  const CancelledTaskListScreen({super.key});
 
-  @override
-  State<CancelledTaskListScreen> createState() => _CancelledTaskListScreenState();
-}
+  final GetTaskListController controller = Get.find<GetTaskListController>();
 
-class _CancelledTaskListScreenState extends State<CancelledTaskListScreen> {
-  bool _isLoadingData = false;
-  TaskListByStatusModel? taskListModel;
-
-  @override
-  void initState() {
-    super.initState();
-    _loadTaskList();
-  }
-
-  Future<void> _loadTaskList() async {
-    setState(() => _isLoadingData = true);
-
-    try {
-      final response = await NetworkCaller.getRequest(
-        url: Urls.taskListByStatusUrl('Canceled'),
-      );
-
-      if (response.isSuccess) {
-        setState(() {
-          taskListModel = TaskListByStatusModel.fromJson(response.responseData!);
-        });
-      } else {
-        if (mounted) {
-          showSnackBarMessage(context, response.errorMessage);
-        }
-      }
-    } finally {
-      if (mounted) {
-        setState(() => _isLoadingData = false);
-      }
-    }
+  CancelledTaskListScreen({super.key}) {
+    controller.loadTaskList('Canceled');
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: TaskManagerAppBar(textTheme: Theme.of(context).textTheme),
+      appBar: TaskManagerAppBar(
+        textTheme: Theme.of(context).textTheme,
+        onImageChanged: () {},
+      ),
       body: RefreshIndicator(
-        onRefresh: _loadTaskList,
+        onRefresh: () => controller.loadTaskList('Canceled'),
         child: ScreenBackground(
-          child: _isLoadingData
-              ? const Center(child: CircularProgressIndicator())
-              : _buildContent(),
+          child: Obx(() {
+            if (controller.isLoadingData.value) {
+              return const Center(child: CircularProgressIndicator());
+            }
+            return _buildContent();
+          }),
         ),
       ),
     );
   }
 
   Widget _buildContent() {
-    if (taskListModel?.taskList?.isEmpty ?? true) {
+    if (controller.taskListModel.value?.taskList?.isEmpty ?? true) {
       return Stack(
         children: [
           ListView(),
@@ -82,14 +51,14 @@ class _CancelledTaskListScreenState extends State<CancelledTaskListScreen> {
     }
 
     return ListView.builder(
-      padding: const EdgeInsets.symmetric(horizontal: 10,vertical: 8),
-      itemCount: taskListModel?.taskList?.length ?? 0,
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+      itemCount: controller.taskListModel.value?.taskList?.length ?? 0,
       itemBuilder: (context, index) {
         return TaskItemWidget(
-          taskModel: taskListModel?.taskList?[index],
+          taskModel: controller.taskListModel.value?.taskList?[index],
           status: 'Cancelled',
           showEditButton: false,
-          onStatusChange: _loadTaskList,
+          onStatusChange: () => controller.loadTaskList('Canceled'),
         );
       },
     );

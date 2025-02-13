@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:task_manager/UI/Utills/app_colors.dart';
 import 'package:task_manager/UI/Widgets/show_custom_alert_dialog_function.dart';
 import 'package:task_manager/UI/Widgets/show_snackbar_message.dart';
+import 'package:task_manager/UI/controller/task_operation_controller.dart';
 import '../../Data/models/task_model.dart';
-import '../../Data/services/network_caller.dart';
-import '../../Data/utils/urls.dart';
+
 
 class TaskItemWidget extends StatefulWidget {
   const TaskItemWidget({
@@ -25,6 +26,9 @@ class TaskItemWidget extends StatefulWidget {
 }
 
 class _TaskItemWidgetState extends State<TaskItemWidget> {
+  // Get instance of our controller
+  final TaskOperationsController taskController = Get.find<TaskOperationsController>();
+
   @override
   Widget build(BuildContext context) {
     return Card(
@@ -65,6 +69,7 @@ class _TaskItemWidgetState extends State<TaskItemWidget> {
                 ),
                 Row(
                   children: [
+                    // Show edit button conditionally
                     if (widget.showEditButton)
                       IconButton(
                         onPressed: () {
@@ -75,6 +80,7 @@ class _TaskItemWidgetState extends State<TaskItemWidget> {
                           color: AppColor.themeColor,
                         ),
                       ),
+                    // Delete button
                     IconButton(
                       onPressed: () {
                         _deletedItemAlertDialog();
@@ -94,30 +100,44 @@ class _TaskItemWidgetState extends State<TaskItemWidget> {
     );
   }
 
+  // Update task status using controller
   Future<void> _updateTodoStatus(String id, String status) async {
-    final NetworkResponse networkResponse = await NetworkCaller.getRequest(
-      url: Urls.updateTaskStatusUrl(id, status),
+    // Show loading indicator while updating
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) => const Center(child: CircularProgressIndicator()),
     );
 
-    if (networkResponse.isSuccess) {
-      showSnackBarMessage(context, 'Update successful');
-      setState(() {
-        widget.taskModel?.status = status;
-      });
+    final success = await taskController.updateTaskStatus(id, status);
+
+    // Hide loading indicator
+    if (mounted) {
       Navigator.pop(context);
-      // Notify parent about the status change
-      widget.onStatusChange?.call();
+    }
+
+    if (success) {
+      if (mounted) {
+        showSnackBarMessage(context, 'Update successful');
+        setState(() {
+          widget.taskModel?.status = status;
+        });
+        Navigator.pop(context); // Close status selection dialog
+        widget.onStatusChange?.call();
+      }
     } else {
-      showSnackBarMessage(context, networkResponse.errorMessage);
+      if (mounted) {
+        showSnackBarMessage(context, taskController.errorMessage.value);
+      }
     }
   }
 
+  // Show status change dialog
   void _showChangeStatusDialog({required String? id}) {
     if (id == null) {
       showSnackBarMessage(context, 'Invalid Task ID');
       return;
     }
-
 
     final List<String> availableStatuses = _getAvailableStatuses(widget.status);
 
@@ -143,6 +163,7 @@ class _TaskItemWidgetState extends State<TaskItemWidget> {
     );
   }
 
+  // Get available status options based on current status
   List<String> _getAvailableStatuses(String currentStatus) {
     switch (currentStatus.toLowerCase()) {
       case 'new':
@@ -156,6 +177,7 @@ class _TaskItemWidgetState extends State<TaskItemWidget> {
     }
   }
 
+  // Show delete confirmation dialog
   void _deletedItemAlertDialog() {
     ShowCustomAlertDialog(
       context,
@@ -171,21 +193,36 @@ class _TaskItemWidgetState extends State<TaskItemWidget> {
     );
   }
 
+  // Delete task using controller
   Future<void> _deleteItem({required String? id}) async {
     if (id == null) {
       showSnackBarMessage(context, 'Invalid Task ID');
       return;
     }
 
-    final NetworkResponse networkResponse = await NetworkCaller.getRequest(
-      url: Urls.deleteTaskUrl(id),
+    // Show loading indicator while deleting
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) => const Center(child: CircularProgressIndicator()),
     );
 
-    if (networkResponse.isSuccess) {
-      showSnackBarMessage(context, 'Delete Successfully');
-      widget.onStatusChange?.call();
+    final success = await taskController.deleteTask(id);
+
+    // Hide loading indicator
+    if (mounted) {
+      Navigator.pop(context);
+    }
+
+    if (success) {
+      if (mounted) {
+        showSnackBarMessage(context, 'Delete Successfully');
+        widget.onStatusChange?.call();
+      }
     } else {
-      showSnackBarMessage(context, 'Delete failed');
+      if (mounted) {
+        showSnackBarMessage(context, taskController.errorMessage.value);
+      }
     }
   }
 }
