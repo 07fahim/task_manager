@@ -1,9 +1,7 @@
 import 'dart:convert';
-
 import 'package:flutter/cupertino.dart';
 import 'package:http/http.dart';
 import 'package:task_manager/app.dart';
-
 import '../../UI/Screens/sign_in_screen.dart';
 import '../../UI/controller/auth_controller.dart';
 
@@ -27,7 +25,7 @@ class NetworkCaller {
       Uri uri = Uri.parse(url);
       debugPrint('URL => $url');
       Response response =
-      await get(uri, headers: {'token': AuthController.accessToken ?? ''});
+      await get(uri, headers: {'token': AuthController.instance.accessToken});
       debugPrint('Response Code => ${response.statusCode}');
       debugPrint('Response Data => ${response.body}');
       if (response.statusCode == 200) {
@@ -36,14 +34,11 @@ class NetworkCaller {
             isSuccess: true,
             statusCode: response.statusCode,
             responseData: decodedResponse);
-      }else if (response.statusCode == 401) {
+      } else if (response.statusCode == 401) {
         await _logout();
-        return NetworkResponse(
-            isSuccess: false, statusCode: response.statusCode);
-      }
-      else {
-        return NetworkResponse(
-            isSuccess: false, statusCode: response.statusCode);
+        return NetworkResponse(isSuccess: false, statusCode: response.statusCode);
+      } else {
+        return NetworkResponse(isSuccess: false, statusCode: response.statusCode);
       }
     } catch (e) {
       return NetworkResponse(
@@ -63,7 +58,7 @@ class NetworkCaller {
       Response response = await post(uri,
           headers: {
             'content-type': 'application/json',
-            'token': AuthController.accessToken ?? ''
+            'token': AuthController.instance.accessToken
           },
           body: jsonEncode(body));
       debugPrint('Response Code => ${response.statusCode}');
@@ -76,12 +71,9 @@ class NetworkCaller {
             responseData: decodedResponse);
       } else if (response.statusCode == 401) {
         await _logout();
-        return NetworkResponse(
-            isSuccess: false, statusCode: response.statusCode);
-      }
-       else {
-        return NetworkResponse(
-            isSuccess: false, statusCode: response.statusCode);
+        return NetworkResponse(isSuccess: false, statusCode: response.statusCode);
+      } else {
+        return NetworkResponse(isSuccess: false, statusCode: response.statusCode);
       }
     } catch (e) {
       return NetworkResponse(
@@ -93,14 +85,10 @@ class NetworkCaller {
   }
 
   static Future<void> _logout() async {
-    await AuthController.clearUserData();
+    await AuthController.instance.clearUserData();
     Navigator.pushNamedAndRemoveUntil(
         TaskManagerApp.navigatorKey.currentContext!,
         SignInScreen.name,
             (_) => false);
   }
-
-
-
-
 }
